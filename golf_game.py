@@ -403,4 +403,7 @@ def redrawWindow(ball, line, shoot=False, update=True):
     for x in powerUpButtons:    # Draw the power up buttons in top right
         pygame.draw.circle(win, (0, 0, 0), (x[0], x[1]), x[2] + 2)
         pygame.draw.circle(win, x[4], (x[0], x[1]), x[2])
-        text  = parFont.render(x[3], 1, (255, 255, 255))
+        text = parFont.render(x[3], 1, (255, 255, 255))
+        win.blit(text, (x[0] - (text.get_width() / 2), x[1] - (text.get_height() / 2)))
+
+    # Draw information such as strokes, par and powerups left
