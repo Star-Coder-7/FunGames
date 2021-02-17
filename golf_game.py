@@ -459,4 +459,66 @@ def redrawWindow(ball, line, shoot=False, update=True):
 
 
 def coinImg():   # Animation for spinning coin, coin acts as currency
-    pass
+    global coinTime, coinIndex
+    coinTime += 1
+    if coinTime == 15:
+        coinIndex += 1
+        coinTime = 0
+    if coinIndex == 8:
+        coinIndex = 0
+
+    return coinPics[coinIndex]
+
+
+def powerBar(moving=False, angle=0):
+    if moving:
+        # Move the arm on the power meter if we've locked the angle
+        redrawWindow(ballStationary, line, False, False)
+        pygame.draw.line(win, (255, 255, 255), (80, winHeight - 7), (int(80 + round(math.cos(angle) * 60)),
+                                                                     int((winHeight - (math.sin(angle) * 60)))), 3)
+    pygame.display.update()
+
+
+# Find the angle that the ball hits the ground at
+def findAngle(pos):
+    sX = ballStationary[0]
+    sY = ballStationary[1]
+    try:
+        angle = math.atan((sY - pos[1]) / (sX - pos[0]))
+    except:
+        angle = math.pi / 2
+
+    if pos[1] < sY and pos[0] > sX:
+        angle = abs(angle)
+    elif pos[1] < sY and pos[0] < sX:
+        angle = math.pi - angle
+    elif pos[1] > sY and pos[0] < sX:
+        angle = math.pi + abs(angle)
+    elif pos[1] > sY and pos[0] > sX:
+        angle = (math.pi * 2) - angle
+
+    return angle
+
+
+def onGreen():  # Determine if we are on the green
+    global hole
+
+    for i in objects:
+        if i[4] == 'green':
+            if i[1] + i[3] > ballStationary[1] > i[1] - 20 and i[0] < ballStationary[0] < i[0] + i[2]:
+                return True
+            else:
+                return False
+
+
+def overHole(x, y):   # Determine if we are over top of the hole
+    if hole[0] - 6 < x < hole[0] + 6:
+        if hole[1] - 13 < y < hole[1] + 10:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
+pass
