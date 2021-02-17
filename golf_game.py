@@ -521,4 +521,64 @@ def overHole(x, y):   # Determine if we are over top of the hole
         return False
 
 
-pass
+list = courses.getPar(1)
+par = list[level - 1]
+sheet = ScoreSheet(list)
+
+pos = courses.getStart(level, 1)
+ballStationary = pos
+setup(1)
+
+# MAIN GAME LOOP:
+# - Collision of ball
+# - Locking angle and power
+# - Checking if power up buttons are clicked
+# - Shooting the ball, uses physics module
+# - Keeping track of strokes
+# - Calls all functions and uses modules/classes imported and defined above
+
+# Start loop
+# Display start screen
+
+hover = False
+starting = True
+while starting:
+    pygame.time.delay(10)
+    start_screen.mainScreen(hover)
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEMOTION:
+            pos = pygame.mouse.get_pos()
+            hover = start_screen.shopClick(pos)
+            course = start_screen.click(pos)
+            start_screen.mouseOver(course is not None)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if start_screen.click(pos) is not None:
+                starting = False
+                break
+            if start_screen.shopClick(pos) is True:
+                surface = start_screen.drawShop()
+                win.blit(surface, (0, 0))
+                pygame.display.update()
+                shop = True
+                while shop:
+                    for event in pygame.event.get():
+                        pygame.time.delay(10)
+                        if event.type == pygame.QUIT:
+                            pygame.quit()
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            pos = pygame.mouse.get_pos()
+                            if 10 < pos[0] < 100 and pos[1] > 560:
+                                shop = False
+                                break
+                            surface = start_screen.drawShop(pos, True)
+                            win.blit(surface, (0, 0))
+                            pygame.display.update()
+
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            break
+
+# Game loop for levels and collision
+while True:
+    pass
