@@ -407,3 +407,56 @@ def redrawWindow(ball, line, shoot=False, update=True):
         win.blit(text, (x[0] - (text.get_width() / 2), x[1] - (text.get_height() / 2)))
 
     # Draw information such as strokes, par and powerups left
+    for i in objects:
+        if i[4] == 'sand':
+            for x in range(i[2] // 64):
+                win.blit(sand, (i[0] + (x * 64), i[0]))
+        elif i[4] == 'water':
+            for x in range(i[2] // 64):
+                water = water.convert()
+                water.set_alpha(170)
+                win.blit(water, (i[0] + (x * 64), i[1]))
+        elif i[4] == 'edge':
+            win.blit(edge, (i[0], i[1]))
+        elif i[4] == 'bottom':
+            for x in range(i[2] // 64):
+                win.blit(bottom, (i[0] + (64 * x), i[1]))
+        elif i[4] == 'flag':
+            win.blit(flag, (i[0], i[1]))
+            pygame.draw.circle(win, (0,0,0), (i[0] + 2, i[1] + i[3]), 6)
+            flagx = i[0]
+        elif i[4] == 'floor':
+            for x in range(i[2] // 64):
+                win.blit(bottom, (i[0] + 64 * x, i[1]))
+        elif i[4] == 'green':
+            for x in range(i[2] // 64):
+                win.blit(green, (i[0] + (64 * x), i[1]))
+        elif i[4] == 'wall':
+            for x in range(i[3] // 64):
+                win.blit(edge, (i[0], i[1] + (64 * x)))
+        elif i[4] == 'laser':
+            for x in range(i[3] // 64):
+                win.blit(laser, (i[0], i[1] + (64 * x)))
+        elif i[4] == 'sticky':
+            for x in range(i[3]//64):
+                win.blit(sticky, (i[0], i[1] + (64 * x)))
+        elif i[4] == 'coin':
+            if i[5]:
+                img = coinImg()
+                win.blit(img, (i[0], i[1]))
+
+    win.blit(powerMeter, (4, 520))
+
+    if line is not None and not shoot:
+        pygame.draw.line(win, (0, 0, 0), ballStationary, line, 2)
+
+    # Draw the ball and its outline
+    pygame.draw.circle(win, (0, 0, 0), ball, 5)
+    pygame.draw.circle(win, ballColor, ball, 4)
+
+    if update:
+        powerBar()
+
+
+def coinImg():   # Animation for spinning coin, coin acts as currency
+    pass
