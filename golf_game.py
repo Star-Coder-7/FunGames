@@ -622,4 +622,98 @@ while True:
                 pos = pygame.mouse.get_pos()
                 # See if the power up buttons are clicked
                 for x in powerUpButtons:
-                    pass
+                    # Check collision of mouse and button
+                    if x[0] + x[2] > pos[0] > x[0] - x[2] and x[1] + x[2] > pos[1] > x[1] - x[2]:
+                        lock = -1
+                        if powerUps == 0:
+                            error()
+                            break
+                        elif x[3] == 'S':   # Sticky Ball (sticks to any non-hazard)
+                            if stickyPower is False and superPower is False and powerUps > 0:
+                                stickyPower = True
+                                powerUps -= 1
+                                ballColor = (255, 0, 255)
+                        elif x[3] == 'M':  # Mullagain, allows you to retry your sot from your previous position, will
+                                            # remove strokes u had on last shot
+                            if mullAgain is False and powerUps > 0 and strokes >= 1:
+                                mullAgain = True
+                                powerUps -= 1
+                                ballStationary = shootPos
+                                pos = pygame.mouse.get_pos()
+                                angle = findAngle(pos)
+                                line = (round(ballStationary[0] + (math.cos(angle) * 50)),
+                                        round(ballStationary[1] - (math.sin(angle) * 50)))
+                                if hazard:
+                                    strokes -= 2
+                                else:
+                                    strokes -= 1
+                                hazard = False
+                        elif x[3] == 'P':  # Power ball, power is multiplied by 1.5x
+                            if superPower is False and stickyPower is False and powerUps > 0:
+                                superPower = True
+                                powerUps -= 1
+                                ballColor = (255, 69, 0)
+
+                # If you click the power up button don't lock angle
+                if lock == 0:
+                    powerAngle = math.pi
+                    neg = 1
+                    powerLock = False
+                    loopTime = 0
+
+                    while not powerLock:
+                        # If we haven't locked power stay in this loop until we do
+                        loopTime += 1
+                        if loopTime == 6:
+                            powerAngle -= 0.1 * neg
+                            powerBar(True, powerAngle)
+                            loopTime = 0
+                            if powerAngle < 0 or powerAngle > math.pi:
+                                neg *= -1
+                        else:
+                            redrawWindow(ballStationary, line, False, False)
+
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                pygame.quit()
+                            if event.type == pygame.MOUSEBUTTONDOWN:
+                                strokes += 1
+                                hazard = False
+                                if not onGreen():
+                                    shoot = True
+                                else:
+                                    put = True
+                                    if SOUND:
+                                        puttSound.play()
+                                if put:
+                                    power = (math.pi - powerAngle) * 5
+                                    rollVel = power
+                                else:
+                                    if not superPower:  # Change power if we selected power ball
+                                        power = (math.pi - powerAngle) * 30
+                                    else:
+                                        power = (math.pi - powerAngle) * 40
+                                shootPos = ballStationary
+                                powerLock = True
+                                break
+
+            if event.type == pygame.MOUSEMOTION:     # Change the position of the angle line
+                pos = pygame.mouse.get_pos()
+                angle = findAngle(pos)
+                line = (round(ballStationary[0] + (math.cos(angle) * 50)), round(ballStationary[1] -
+                                                                                 (math.sin(angle) * 50)))
+
+                if onGreen():    # If we are on green have the angle lin point towards the hole, bc putter cannot chip
+                    if ballStationary[0] > flagx:
+                        angle = math.pi
+                        line = (ballStationary[0] - 30, ballStationary[1])
+                    else:
+                        angle = 0
+                        line = (ballStationary[0] + 30, ballStationary[1])
+
+    redrawWindow(ballStationary, line)
+    hitting = False
+
+    while put and not shoot:     # If we are putting
+        # If we aren't in the hole
+        pass
