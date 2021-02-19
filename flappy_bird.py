@@ -75,10 +75,40 @@ class Bird:
             self.imgCount = self.ANIMATION_TIME * 2
 
         rotatedImage = pygame.transform.rotate(self.img, self.tilt)
-        newRect = rotatedImage.get_rect(center=self.img.get_rect(topLeft=(self.x, self.y)).center)
-        win.blit(rotatedImage, newRect.topleft())
+        newRect = rotatedImage.get_rect(center=self.img.get_rect(topleft=(self.x, self.y)).center)
+        win.blit(rotatedImage, newRect.topleft)
 
     def getMask(self):
         return pygame.mask.from_surface(self.img)
 
 
+class Pipe:
+    pass
+
+
+def drawWindow(win, bird):
+    win.blit(BG_IMG, (0, 0))
+    bird.draw(win)
+    pygame.display.update()
+
+
+def main():
+    bird = Bird(200, 200)
+    win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+    clock = pygame.time.Clock()
+
+    run = True
+    while run:
+        clock.tick(30)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        bird.move()
+        drawWindow(win, bird)
+
+    pygame.quit()
+    quit()
+
+
+main()
