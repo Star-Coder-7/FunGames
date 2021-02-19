@@ -581,4 +581,45 @@ while starting:
 
 # Game loop for levels and collision
 while True:
-    pass
+    if stickyPower == False and superPower == False:
+        ballColor = start_screen.getBallColor()
+        if ballColor is None:
+            ballColor = (255, 255, 255)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                if event.key == pygame.K_SPACE:
+                    fade()
+                    if strokes == 1:
+                        holeInOne()
+                    else:
+                        displayScore(strokes, par)
+
+                    strokes = 0
+            if event.type == pygame.MOUSEMOTION:
+                pos = pygame.mouse.get_pos()
+                for x in powerUpButtons:
+                    if x[0] + x[2] > pos[0] > x[0] - x[2] and x[1] + x[2] > pos[1] > x[1] - x[2]:
+                        if x[3] == 's':
+                            x[4] = (255, 0, 120)
+                        elif x[3] == 'M':
+                            x[4] == (105, 75, 75)
+                        elif x[3] == 'P':
+                            x[4] = (170, 69, 0)
+                    else:
+                        if x[3] == 'S':
+                            x[4] = (255, 0, 255)
+                        elif x[3] == 'M':
+                            x[4] = (105, 105, 105)
+                        elif x[3] == 'P':
+                            x[4] = (255, 69, 0)
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                lock = 0
+                pos = pygame.mouse.get_pos()
+                # See if power up buttons are clicked
+                for x in powerUpButtons:
+                    pass
