@@ -15,6 +15,8 @@ PIPE_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("img2", "pipe
 BASE_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("img2", "base.png")))
 BG_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("img2", "bg.png")))
 
+STAT_FONT = pygame.font.SysFont("comicsans", 50)
+
 
 class Bird:
     IMGS = BIRD_IMGS
@@ -78,7 +80,7 @@ class Bird:
         newRect = rotatedImage.get_rect(center=self.img.get_rect(topleft=(self.x, self.y)).center)
         win.blit(rotatedImage, newRect.topleft)
 
-    def getMask(self):
+    def get_mask(self):
         return pygame.mask.from_surface(self.img)
 
 
@@ -110,18 +112,72 @@ class Pipe:
     def draw(self, win):
         win.blit(self.PIPE_TOP, (self.x, self.top))
         win.blit(self.PIPE_BOTTOM, (self.x, self.bottom))
-        
 
-def drawWindow(win, bird):
+    def collide(self, bird):
+        birdMask = bird.get_mask()
+        topMask = pygame.mask.from_surface(self.PIPE_TOP)
+        bottomMask = pygame.mask.from_surface(self.PIPE_BOTTOM)
+
+        topOffset = (self.x - bird.x, self.top - round(bird.y))
+        bottomOffset = (self.x - bird.x, self.bottom - round(bird.y))
+
+        bPoint = birdMask.overlap(bottomMask, bottomOffset)
+        tPoint = birdMask.overlap(topMask, topOffset)
+
+        if tPoint or bPoint:
+            return True
+
+        return False
+
+
+class Base:
+    VEL = 5
+    WIDTH = BASE_IMG.get_width()
+    IMG = BASE_IMG
+
+    def __init__(self, y):
+        self.y = y
+        self.x1 = 0
+        self.x2 = self.WIDTH
+
+    def move(self):
+        self.x1 -= self.VEL
+        self.x2 -= self.VEL
+
+        if self.x1 + self.WIDTH < 0:
+            self.x1 = self.x2 + self.WIDTH
+
+        if self.x2 + self.WIDTH < 0:
+            self.x2 = self.x1 + self.WIDTH
+
+    def draw(self, win):
+        win.blit(self.IMG, (self.x1, self.y))
+        win.blit(self.IMG, (self.x2, self.y))
+
+
+def drawWindow(win, bird, pipes, base, score):
     win.blit(BG_IMG, (0, 0))
+
+    for pipe in pipes:
+        pipe.draw(win)
+
+    text = STAT_FONT.render("Score: " + str(score), 1, (255, 255, 255))
+    win.blit(text, (WIN_WIDTH - 10 - text.get_width(), 10))
+
+    base.draw(win)
+
     bird.draw(win)
     pygame.display.update()
 
 
 def main():
-    bird = Bird(200, 200)
+    bird = Bird(230, 350)
+    base = Base(730)
+    pipes = [Pipe(600)]
     win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
     clock = pygame.time.Clock()
+
+    score = 0
 
     run = True
     while run:
@@ -130,8 +186,34 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-        bird.move()
-        drawWindow(win, bird)
+        # bird.move()
+        addPipe = False
+        rem = []
+        for pipe in pipes:
+            if pipe.collide(bird):
+                pass
+
+            if pipe.x + pipe.PIPE_TOP.get_width() < 0:
+                rem.append(pipe)
+
+            if not pipe.passed and pipe.x < bird.x:
+                pipe.passed = True
+                addPipe = True
+
+            pipe.move()
+
+        if addPipe:
+            score += 1
+            pipes.append(Pipe(600))
+
+        for r in rem:
+            pipes.remove(r)
+
+        if bird.y + bird.img.get_height() >= 730:
+            pass
+
+        base.move()
+        drawWindow(win, bird, pipes, base)
 
     pygame.quit()
     quit()
