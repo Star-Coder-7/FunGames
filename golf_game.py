@@ -301,7 +301,7 @@ def endScreen():  # Display this screen when the user completes the course
                 break
 
 
-def setup(level):   # Setup objects for the level from module courses
+def setup(level):  # Setup objects for the level from module courses
     global line, par, hole, power, ballStationary, objects, ballColor, stickyPower, superPower, mullAgain
     ballColor = (255, 255, 255)
     stickyPower = False
@@ -331,7 +331,7 @@ def setup(level):   # Setup objects for the level from module courses
         power = 1
 
 
-def fade():   # Fade out screen when player gets ball in hole
+def fade():  # Fade out screen when player gets ball in hole
     fadePls = pygame.Surface((winWidth, winHeight))
     fadePls.fill((0, 0, 0))
     for alpha in range(0, 300):
@@ -349,7 +349,7 @@ def showScore():  # Display the score from class scoreSheet
     sheet.drawSheet(strokes)
     pygame.display.update()
     go = True
-    while go:   # Wait until user clicks until we move to next level
+    while go:  # Wait until user clicks until we move to next level
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -358,7 +358,7 @@ def showScore():  # Display the score from class scoreSheet
                 setup(level)
 
 
-def holeInOne():    # If player gets a hole in one display special message to screen
+def holeInOne():  # If player gets a hole in one display special message to screen
     text = myFont.render('Hole in One!', 1, (255, 255, 255))
     x = (winWidth / 2) - (text.get_width() / 2)
     y = (winHeight / 2) - (text.get_height() / 2)
@@ -400,7 +400,7 @@ def redrawWindow(ball, line, shoot=False, update=True):
     global water, par, strokes, flagx
 
     win.blit(background, (-200, -100))  # REFRESH DISPLAY
-    for x in powerUpButtons:    # Draw the power up buttons in top right
+    for x in powerUpButtons:  # Draw the power up buttons in top right
         pygame.draw.circle(win, (0, 0, 0), (x[0], x[1]), x[2] + 2)
         pygame.draw.circle(win, x[4], (x[0], x[1]), x[2])
         text = parFont.render(x[3], 1, (255, 255, 255))
@@ -423,7 +423,7 @@ def redrawWindow(ball, line, shoot=False, update=True):
                 win.blit(bottom, (i[0] + (64 * x), i[1]))
         elif i[4] == 'flag':
             win.blit(flag, (i[0], i[1]))
-            pygame.draw.circle(win, (0,0,0), (i[0] + 2, i[1] + i[3]), 6)
+            pygame.draw.circle(win, (0, 0, 0), (i[0] + 2, i[1] + i[3]), 6)
             flagx = i[0]
         elif i[4] == 'floor':
             for x in range(i[2] // 64):
@@ -438,7 +438,7 @@ def redrawWindow(ball, line, shoot=False, update=True):
             for x in range(i[3] // 64):
                 win.blit(laser, (i[0], i[1] + (64 * x)))
         elif i[4] == 'sticky':
-            for x in range(i[3]//64):
+            for x in range(i[3] // 64):
                 win.blit(sticky, (i[0], i[1] + (64 * x)))
         elif i[4] == 'coin':
             if i[5]:
@@ -458,7 +458,7 @@ def redrawWindow(ball, line, shoot=False, update=True):
         powerBar()
 
 
-def coinImg():   # Animation for spinning coin, coin acts as currency
+def coinImg():  # Animation for spinning coin, coin acts as currency
     global coinTime, coinIndex
     coinTime += 1
     if coinTime == 15:
@@ -511,7 +511,7 @@ def onGreen():  # Determine if we are on the green
                 return False
 
 
-def overHole(x, y):   # Determine if we are over top of the hole
+def overHole(x, y):  # Determine if we are over top of the hole
     if hole[0] - 6 < x < hole[0] + 6:
         if hole[1] - 13 < y < hole[1] + 10:
             return True
@@ -628,13 +628,13 @@ while True:
                         if powerUps == 0:
                             error()
                             break
-                        elif x[3] == 'S':   # Sticky Ball (sticks to any non-hazard)
+                        elif x[3] == 'S':  # Sticky Ball (sticks to any non-hazard)
                             if stickyPower is False and superPower is False and powerUps > 0:
                                 stickyPower = True
                                 powerUps -= 1
                                 ballColor = (255, 0, 255)
                         elif x[3] == 'M':  # Mullagain, allows you to retry your sot from your previous position, will
-                                            # remove strokes u had on last shot
+                            # remove strokes u had on last shot
                             if mullAgain is False and powerUps > 0 and strokes >= 1:
                                 mullAgain = True
                                 powerUps -= 1
@@ -697,13 +697,13 @@ while True:
                                 powerLock = True
                                 break
 
-            if event.type == pygame.MOUSEMOTION:     # Change the position of the angle line
+            if event.type == pygame.MOUSEMOTION:  # Change the position of the angle line
                 pos = pygame.mouse.get_pos()
                 angle = findAngle(pos)
                 line = (round(ballStationary[0] + (math.cos(angle) * 50)), round(ballStationary[1] -
                                                                                  (math.sin(angle) * 50)))
 
-                if onGreen():    # If we are on green have the angle lin point towards the hole, bc putter cannot chip
+                if onGreen():  # If we are on green have the angle lin point towards the hole, bc putter cannot chip
                     if ballStationary[0] > flagx:
                         angle = math.pi
                         line = (ballStationary[0] - 30, ballStationary[1])
@@ -714,6 +714,116 @@ while True:
     redrawWindow(ballStationary, line)
     hitting = False
 
-    while put and not shoot:     # If we are putting
+    while put and not shoot:  # If we are putting
         # If we aren't in the hole
-        pass
+        if not (overHole(ballStationary[0], ballStationary[1])):
+            pygame.time.delay(20)
+            rollVel -= 0.5  # Slow down the ball gradually
+            if angle == math.pi:
+                ballStationary = (round(ballStationary[0] - rollVel), ballStationary[1])
+            else:
+                ballStationary = (round(ballStationary[0] + rollVel), ballStationary[1])
+
+            redrawWindow(ballStationary, None, True)
+
+            if rollVel < 0.5:  # Stop moving ball if the power is low enough
+                time = 0
+                put = False
+                pos = pygame.mouse.get_pos()
+                angle = findAngle(pos)
+                line = (round(ballStationary[0] + (math.cos(angle) * 50)), round(ballStationary[1] -
+                                                                                 (math.sin(angle) * 50)))
+
+                # Determine what way to point the angle line
+                if onGreen():
+                    if ballStationary[0] > flagx:
+                        angle = math.pi
+                        line = (ballStationary[0] - 30, ballStationary[1])
+                    else:
+                        angle = 0
+                        line = (ballStationary[0] + 30, ballStationary[1])
+        else:
+            # We have got the ball into the hole
+            if SOUND:
+                inHole.play()
+
+            while True:   # Move the ball so it looks like it goes into the hole (increase y value)
+                pygame.time.delay(20)
+                redrawWindow(ballStationary, None, True)
+                ballStationary = (ballStationary[0], ballStationary[1] + 1)
+                if ballStationary[0] > hole[0]:
+                    ballStationary = (ballStationary[0] - 1, ballStationary[1])
+                else:
+                    ballStationary = (ballStationary[0] + 1, ballStationary[1])
+
+                if ballStationary[1] > hole[1] + 5:
+                    put = False
+                    break
+
+            # Advance to score board
+            fade()
+            if strokes == 1:
+                holeInOne()
+            else:
+                displayScore(strokes, par)
+
+            strokes = 0
+
+    while shoot:    # If we are shooting the ball
+        if not(overHole(ballStationary[0], ballStationary[1])):  # If we aren't in the hole
+            maxT = physics.maxTime(power, angle)
+            time += 0.085
+            ballCords = physics.ballPath(ballStationary[0], ballStationary[1], power, angle, time)
+            redrawWindow(ballCords, None, True)
+
+            # TO FIX GLITCHES WHERE YOU GO THROUGH WALLS AND FLOORS
+            if ballCords[1] > 650:
+                var = True
+                while var:
+                    fade()
+                    if strokes == 1:
+                        holeInOne()
+                    else:
+                        displayScore(strokes, par)
+
+                    strokes = 0
+
+            # COLLISION LOOP, VERY COMPLEX,
+            # - All angles are in radians
+            # - Physics are in general, real and correct
+
+            for i in objects:   # For every object in the level
+                if i[4] == 'coin':  # If the ball hits a coin
+                    if i[5]:
+                        if i[0] + i[2] > ballCords[0] > i[0] and i[1] < ballCords[1] < i[1] + i[3]:
+                            courses.coinHit(level - 1)
+                            coins += 1
+
+                if i[4] == 'laser':    # if the ball hits the laser hazard
+                    if i[0] < ballCords[0] < i[0] + i[2] and i[1] < ballCords[1] < i[1] + i[3]:
+                        ballCords = shootPos
+                        hazard = True
+                        subtract = 0
+                        ballStationary = ballCords
+                        time = 0
+                        pos = pygame.mouse.get_pos()
+                        angle = findAngle(pos)
+                        line = (round(ballStationary[0] + (math.cos(angle) * 50)),
+                                round(ballStationary[1] - (math.sin(angle) * 50)))
+                        power = 1
+                        powerAngle = math.pi
+                        shoot = False
+                        strokes += 1
+
+                        label = myFont.render('Laser Hazard!!! +1 penalty stroke', 1, (255, 255, 255))
+                        win.blit(label, (winWidth / 2 - label.get_width() / 2, winHeight / 2 - label.get_height() / 2))
+                        pygame.display.update()
+                        pygame.time.delay(1000)
+                        ballColor = (255, 255, 255)
+                        stickyPower = False
+                        superPower = False
+                        mullAgain = False
+                        break
+
+                elif i[4] == 'water':
+                    pass
