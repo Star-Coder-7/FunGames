@@ -4,6 +4,8 @@ import time
 import os
 import random
 
+pygame.font.init()
+
 WIN_WIDTH = 600
 WIN_HEIGHT = 800
 
@@ -161,7 +163,7 @@ def drawWindow(win, bird, pipes, base, score):
     for pipe in pipes:
         pipe.draw(win)
 
-    text = STAT_FONT.render("Score: " + str(score), 1, (255, 255, 255))
+    text = STAT_FONT.render("Score: " + str(score), 1, (255, 0, 255))
     win.blit(text, (WIN_WIDTH - 10 - text.get_width(), 10))
 
     base.draw(win)
@@ -213,7 +215,7 @@ def main():
             pass
 
         base.move()
-        drawWindow(win, bird, pipes, base)
+        drawWindow(win, bird, pipes, base, score)
 
     pygame.quit()
     quit()
