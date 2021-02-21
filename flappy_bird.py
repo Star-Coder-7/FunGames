@@ -9,6 +9,8 @@ pygame.font.init()
 WIN_WIDTH = 600
 WIN_HEIGHT = 800
 
+GEN = 0
+
 BIRD_IMGS = [pygame.transform.scale2x(pygame.image.load(os.path.join("img2", "bird1.png"))),
              pygame.transform.scale2x(pygame.image.load(os.path.join("img2", "bird2.png"))),
              pygame.transform.scale2x(pygame.image.load(os.path.join("img2", "bird3.png")))]
@@ -157,7 +159,7 @@ class Base:
         win.blit(self.IMG, (self.x2, self.y))
 
 
-def drawWindow(win, birds, pipes, base, score):
+def drawWindow(win, birds, pipes, base, score, gen):
     win.blit(BG_IMG, (0, 0))
 
     for pipe in pipes:
@@ -165,6 +167,9 @@ def drawWindow(win, birds, pipes, base, score):
 
     text = STAT_FONT.render("Score: " + str(score), 1, (255, 0, 255))
     win.blit(text, (WIN_WIDTH - 10 - text.get_width(), 10))
+
+    text = STAT_FONT.render("Gen: " + str(gen), 1, (255, 255, 0))
+    win.blit(text, (10, 10))
 
     base.draw(win)
 
@@ -175,6 +180,8 @@ def drawWindow(win, birds, pipes, base, score):
 
 
 def main(genomes, config):
+    global GEN
+    GEN += 1
     nets = []
     ge = []
     birds = []
@@ -225,7 +232,7 @@ def main(genomes, config):
         for pipe in pipes:
             for x, bird in enumerate(birds):
                 if pipe.collide(bird):
-                    ge[x].fitness -= 1
+                    # ge[x].fitness -= 1
                     birds.pop(x)
                     nets.pop(x)
                     ge.pop(x)
@@ -254,8 +261,11 @@ def main(genomes, config):
                 nets.pop(x)
                 ge.pop(x)
 
+        if score > 50:
+            continue
+
         base.move()
-        drawWindow(win, birds, pipes, base, score)
+        drawWindow(win, birds, pipes, base, score, GEN)
 
 
 def run(config_path):
