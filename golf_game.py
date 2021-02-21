@@ -854,4 +854,127 @@ while True:
                         break
 
                 elif i[4] != 'flag' and i[4] != 'coin':
-                    pass
+                    if i[1] - 2 < ballCords[1] < i[1] + 7 and i[0] + i[2] > ballCords[0] > i[0]:
+                        hitting = False
+                        power = physics.findPower(power, angle, time)
+                        if math.pi * (1 / 2) < angle < math.pi:
+                            x = physics.findAngle(power, angle)
+                            angle = math.pi - x
+                        elif angle < math.pi / 2:
+                            angle = physics.findAngle(power, angle)
+                        elif math.pi < angle < math.pi * (3 / 2):
+                            x = physics.findAngle(power, angle)
+                            angle = math.pi - x
+                        else:
+                            angle = physics.findAngle(power, angle)
+
+                        power *= 0.5
+                        if time > 0.15:
+                            time = 0
+                        subtract = 0
+                        while True:
+                            subtract += 1
+                            if ballCords[1] - subtract < i[1]:
+                                ballCords = (ballCords[0], ballCords[1] - subtract)
+                                break
+                        ballStationary = ballCords
+
+                        if i[4] == 'sand':
+                            subtract = 0
+                            while True:
+                                subtract += 1
+                                if ballCords[1] - subtract < i[1] - 4:
+                                    ballCords = (ballCords[0], ballCords[1] - subtract)
+                                    power = 0
+                                    break
+
+                        if i[4] == 'sticky' or stickyPower:
+                            subtract = 0
+                            while True:
+                                subtract += 1
+                                if ballCords[1] - subtract < i[1] - 4:
+                                    ballCords = (ballCords[0], ballCords[1] - subtract)
+                                    power = 0
+                                    break
+
+                            ballStationary = ballCords
+                            shoot = False
+                            time = 0
+                            pos = pygame.mouse.get_pos()
+                            angle = findAngle(pos)
+                            line = (round(ballStationary[0] + (math.cos(angle) * 50)),
+                                    round(ballStationary[1] - (math.sin(angle) * 50)))
+                            power = 1
+                            powerAngle = math.pi
+
+                    elif i[1] + i[3] > ballCords[1] > i[1] and i[0] - 2 < ballCords[0] < i[0] + 10:
+                        hitting = False
+                        power = physics.findPower(power, angle, time)
+                        if angle < math.pi / 2:
+                            if not(time > maxT):
+                                x = physics.findAngle(power, angle)
+                                angle = math.pi - x
+                            else:
+                                x = physics.findAngle(power, angle)
+                                angle = math.pi + x
+                        else:
+                            x = physics.findAngle(power, angle)
+                            angle = math.pi + x
+
+                        power *= 0.5
+
+                        if time > 0.15:
+                            time = 0
+                        subtract = 0
+
+                        while True:
+                            subtract += 1
+                            if ballCords[0] - subtract < i[0] - 3:
+                                ballCords = (ballCords[0] - subtract, ballCords[1])
+                                break
+                        ballStationary = ballCords
+
+                        if i[4] == 'sticky' or stickyPower:
+                            subtract = 0
+                            while True:
+                                subtract += 1
+                                if ballCords[0] - subtract < i[0] - 3:
+                                    ballCords = (ballCords[0] - subtract, ballCords[1])
+                                    power = 0
+                                    break
+
+                    elif i[1] + i[3] > ballCords[1] > i[1] and i[0] + i[2] - 16 < ballCords[0] < i[0] + i[2]:
+                        hitting = False
+                        power = physics.findPower(power, angle, time)
+
+                        if angle < math.pi:
+                            if not(time > maxT):
+                                angle = physics.findAngle(power, angle)
+                            else:
+                                x = physics.findAngle(power, angle)
+                                angle = math.pi * 2 - x
+                        else:
+                            x = physics.findAngle(power, angle)
+                            angle = math.pi * 2 - x
+
+                        power = power * 0.5
+
+                        if time > 0.15:
+                            time = 0
+                        subtract = 0
+
+                        while True:
+                            subtract += 1
+                            if ballCords[0] + subtract > i[0] + i[2] + 4:
+                                ballCords = (ballCords[0] + subtract, ballCords[1])
+                                break
+                        ballStationary = ballCords
+
+                        if i[4] == 'sticky' or stickyPower:
+                            subtract = 0
+                            while True:
+                                subtract += 1
+                                if ballCords[0] + subtract > i[0] + i[2] + 4:
+                                    ballCords = (ballCords[0] + subtract, ballCords[1])
+                                    power = 0
+                                    break
