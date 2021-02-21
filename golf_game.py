@@ -826,4 +826,32 @@ while True:
                         break
 
                 elif i[4] == 'water':
+                    if i[1] - 6 < ballCords[1] < i[1] + 8 and i[0] + i[2] > ballCords[0] > i[0] + 2:
+                        ballCords = shootPos
+                        subtract = 0
+                        hazard = True
+                        ballStationary = ballCords
+                        time = 0
+                        pos = pygame.mouse.get_pos()
+                        angle = findAngle(pos)
+                        line = (round(ballStationary[0] + (math.cos(angle) * 50)), round(ballStationary[1] -
+                                                                                         (math.sin(angle) * 50)))
+                        power = 1
+                        powerAngle = math.pi
+                        shoot = False
+                        strokes += 1
+
+                        label = myFont.render('Water Hazard', '+1 penalty stroke', 1, (255, 255, 255))
+                        if SOUND:
+                            splash.play()
+                        win.blit(label, (winWidth / 2 - label.get_width() / 2, winHeight / 2 - label.get_height() / 2))
+                        pygame.display.update()
+                        pygame.time.delay(1500)
+                        ballColor = (255, 255, 255)
+                        stickyPower = False
+                        mullagain = False
+                        superPower = False
+                        break
+
+                elif i[4] != 'flag' and i[4] != 'coin':
                     pass
