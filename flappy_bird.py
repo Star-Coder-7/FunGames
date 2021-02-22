@@ -261,14 +261,19 @@ def main(genomes, config):
                 nets.pop(x)
                 ge.pop(x)
 
-        if score > 50:
+        if score > 25:
             continue
 
         base.move()
         drawWindow(win, birds, pipes, base, score, GEN)
 
+        if pygame.mouse.get_pressed()[0]:
+            break
+
 
 def run(config_path):
+    print("Click whenever you want to stop \nor\n wait for a score of 25.")
+
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
                                 neat.DefaultStagnation, config_path)
 
