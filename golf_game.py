@@ -978,3 +978,7 @@ while True:
                                     ballCords = (ballCords[0] + subtract, ballCords[1])
                                     power = 0
                                     break
+
+                    elif i[1] + i[3] < ballCords[1] < i[1] + i[3] + 10 and ballCords[0] + 2 > i[0] and ballCords[0] < \
+                        i[0] + i[2] + 2:
+                        power = physics.findPower(power, angle, time)
