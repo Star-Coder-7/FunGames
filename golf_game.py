@@ -79,7 +79,7 @@ powerUpButtons = [[900, 35, 20, 'P', (255, 69, 0)], [1000, 35, 20, 'S', (255, 0,
 
 # FONTS
 myFont = pygame.font.SysFont('comicsans', 50)
-parFont = myFont = pygame.font.SysFont('comicsans', 30)
+parFont = pygame.font.SysFont('comicsans', 30)
 
 win = pygame.display.set_mode((winWidth, winHeight))
 
