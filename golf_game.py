@@ -982,3 +982,36 @@ while True:
                     elif i[1] + i[3] < ballCords[1] < i[1] + i[3] + 10 and ballCords[0] + 2 > i[0] and ballCords[0] < \
                         i[0] + i[2] + 2:
                         power = physics.findPower(power, angle, time)
+
+                        if not hitting:
+                            hitting = True
+                            if angle > math.pi / 2:
+                                x = physics.findAngle(power, angle)
+                                angle = math.pi + x
+                            else:
+                                x = physics.findAngle(power, angle)
+                                angle = 2 * math.pi - x
+
+                        power *= 0.5
+                        if time > 0.04:
+                            time = 0
+
+                        subtract = 0
+                        while True:
+                            subtract += 1
+                            if ballCords[1] + subtract > i[1] + i[3] + 8:
+                                ballCords = (ballCords[0], ballCords[1] + subtract)
+                                break
+
+                        if i[4] == 'sticky' or stickyPower:
+                            subtract = 0
+                            while True:
+                                subtract += 1
+                                if ballCords[0] + subtract > i[1] + i[3] + 4:
+                                    ballCords = (ballCords[0], ballCords[1] + subtract)
+                                    power = 0
+                                    break
+                        ballStationary = ballCords
+
+                        if power < 2.5:
+                            pass
