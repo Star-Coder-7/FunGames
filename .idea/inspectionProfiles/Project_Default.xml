@@ -38,6 +38,7 @@
         <list>
           <option value="set.*" />
           <option value="grid_module.Grid.*" />
+          <option value="bool.__getitem__" />
         </list>
       </option>
     </inspection_tool>
