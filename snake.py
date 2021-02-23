@@ -82,6 +82,7 @@ class Snake:
 
         for i, c in enumerate(self.body):
             p = c.pos[:]
+
             if p in self.turns:
                 turn = self.turns[p]
                 c.move(turn[0], turn[1])
@@ -137,6 +138,7 @@ def drawGrid(w, rows, surface):
 
     x = 0
     y = 0
+
     for l in range(rows):
         x = x + sizeBtwn
         y = y + sizeBtwn
