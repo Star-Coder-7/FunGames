@@ -1,6 +1,8 @@
 import pygame
 import random
 
+pygame.init()
+
 width = 500
 height = 500
 
@@ -9,6 +11,8 @@ rows = 20
 
 
 class Cube:
+    global colors
+
     rows = 20
     w = 500
 
@@ -91,13 +95,14 @@ class Snake:
             else:
                 c.move(c.dirnx, c.dirny)
 
-    def reset(self, pos):
+    def reset(self, color, pos):
         self.head = Cube(pos)
         self.body = []
         self.body.append(self.head)
         self.turns = {}
         self.dirnx = 0
         self.dirny = 1
+        self.color = color
 
     def addCube(self):
         tail = self.body[-1]
@@ -164,10 +169,11 @@ def randomSnack(rows, item):
 
 def main():
     global s, snack, win
+    colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255), (0, 255, 255), (255, 255, 255)]
     win = pygame.display.set_mode((width, height))
-    s = Snake((255, 0, 0), (10, 10))
+    s = Snake(random.choice(colors), (10, 10))
     s.addCube()
-    snack = Cube(randomSnack(rows, s), color=(0, 255, 0))
+    snack = Cube(randomSnack(rows, s), color=random.choice(colors))
     flag = True
     clock = pygame.time.Clock()
     scores = []
@@ -181,17 +187,17 @@ def main():
         if headPos[0] >= 20 or headPos[0] < 0 or headPos[1] >= 20 or headPos[1] < 0:
             print("Score: ", len(s.body) - 1)
             scores.append(len(s.body) - 1)
-            s.reset((10, 10))
+            s.reset(random.choice(colors), (10, 10))
 
         if s.body[0].pos == snack.pos:
             s.addCube()
-            snack = Cube(randomSnack(rows, s), color=(0, 255, 0))
+            snack = Cube(randomSnack(rows, s), color=random.choice(colors))
 
         for x in range(len(s.body)):
             if s.body[x].pos in list(map(lambda z: z.pos, s.body[x + 1:])):
                 print("Score: ", len(s.body) - 1)
                 scores.append(len(s.body) - 1)
-                s.reset((10, 10))
+                s.reset(random.choice(colors), (10, 10))
                 break
 
         redrawWindow()
