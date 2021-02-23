@@ -1,9 +1,5 @@
-import math
-import random
 import pygame
 import random
-import tkinter as tk
-from tkinter import messagebox
 
 width = 500
 height = 500
@@ -61,22 +57,26 @@ class Snake:
             keys = pygame.key.get_pressed()
 
             for key in keys:
-                if keys[pygame.K_LEFT]:
+                if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                     self.dirnx = -1
                     self.dirny = 0
                     self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
-                elif keys[pygame.K_RIGHT]:
+                elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                     self.dirnx = 1
                     self.dirny = 0
                     self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
-                elif keys[pygame.K_UP]:
+                elif keys[pygame.K_UP] or keys[pygame.K_w]:
                     self.dirny = -1
                     self.dirnx = 0
                     self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
-                elif keys[pygame.K_DOWN]:
+                elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
                     self.dirny = 1
                     self.dirnx = 0
                     self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+                elif keys[pygame.K_SPACE] or keys[pygame.K_RETURN]:
+                    quit()
+                    print("Score:", len(s.body))
+
 
         for i, c in enumerate(self.body):
             p = c.pos[:]
