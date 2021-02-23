@@ -213,7 +213,7 @@ def endScreen():  # Display this screen when the user completes trhe course
     win.blit(text, (winWidth / 2 - text.get_width() / 2, 470))
     pygame.display.update()
 
-    # RE-WRITE TEXT FILE Contaning Scores
+    # RE-WRITE TEXT FILE Containing Scores
     oldScore = 0
     oldCoins = 0
     file = open('scores.txt', 'r')
