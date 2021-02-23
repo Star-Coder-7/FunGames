@@ -51,6 +51,8 @@ class Snake:
         self.dirny = 1
 
     def move(self):
+        global scores
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -75,8 +77,8 @@ class Snake:
                     self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
                 elif keys[pygame.K_SPACE] or keys[pygame.K_RETURN]:
                     quit()
-                    print("Score:", len(s.body))
-
+                    print("Score:", len(s.body) - 1)
+                    print('\n', scores)
 
         for i, c in enumerate(self.body):
             p = c.pos[:]
@@ -166,6 +168,7 @@ def main():
     snack = Cube(randomSnack(rows, s), color=(0, 255, 0))
     flag = True
     clock = pygame.time.Clock()
+    scores = []
 
     while flag:
         pygame.time.delay(50)
@@ -174,7 +177,8 @@ def main():
         headPos = s.head.pos
 
         if headPos[0] >= 20 or headPos[0] < 0 or headPos[1] >= 20 or headPos[1] < 0:
-            print("Score:", len(s.body))
+            print("Score: ", len(s.body) - 1)
+            scores.append(len(s.body) - 1)
             s.reset((10, 10))
 
         if s.body[0].pos == snack.pos:
@@ -183,7 +187,8 @@ def main():
 
         for x in range(len(s.body)):
             if s.body[x].pos in list(map(lambda z: z.pos, s.body[x + 1:])):
-                print("Score:", len(s.body))
+                print("Score: ", len(s.body) - 1)
+                scores.append(len(s.body) - 1)
                 s.reset((10, 10))
                 break
 
