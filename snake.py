@@ -19,7 +19,7 @@ class Cube:
     def __init__(self, start, dirnx=1, dirny=0, color=(255, 0, 0)):
         self.pos = start
         self.dirnx = dirnx
-        self.dirny = dirny  # L, R, U, D
+        self.dirny = dirny  # "L", "R", "U", "D"
         self.color = color
 
     def move(self, dirnx, dirny):
@@ -33,11 +33,10 @@ class Cube:
         j = self.pos[1]
 
         pygame.draw.rect(surface, self.color, (i * dis + 1, j * dis + 1, dis - 2, dis - 2))
-
         if eyes:
-            center = dis // 2
+            centre = dis // 2
             radius = 3
-            circleMiddle = (i * dis + center - radius, j * dis + 8)
+            circleMiddle = (i * dis + centre - radius, j * dis + 8)
             circleMiddle2 = (i * dis + dis - radius * 2, j * dis + 8)
             pygame.draw.circle(surface, (0, 0, 0), circleMiddle, radius)
             pygame.draw.circle(surface, (0, 0, 0), circleMiddle2, radius)
@@ -62,19 +61,19 @@ class Snake:
             keys = pygame.key.get_pressed()
 
             for key in keys:
-                if key[pygame.K_LEFT]:
+                if keys[pygame.K_LEFT]:
                     self.dirnx = -1
                     self.dirny = 0
                     self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
-                elif key[pygame.K_RIGHT]:
+                elif keys[pygame.K_RIGHT]:
                     self.dirnx = 1
                     self.dirny = 0
                     self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
-                elif key[pygame.K_UP]:
+                elif keys[pygame.K_UP]:
                     self.dirny = -1
                     self.dirnx = 0
                     self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
-                elif key[pygame.K_DOWN]:
+                elif keys[pygame.K_DOWN]:
                     self.dirny = 1
                     self.dirnx = 0
                     self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
@@ -87,10 +86,10 @@ class Snake:
                 if i == len(self.body) - 1:
                     self.turns.pop(p)
             else:
-                c.move(self.dirnx, self.dirny)
+                c.move(c.dirnx, c.dirny)
 
     def reset(self, pos):
-        self.head = cube(pos)
+        self.head = Cube(pos)
         self.body = []
         self.body.append(self.head)
         self.turns = {}
@@ -99,7 +98,7 @@ class Snake:
 
     def addCube(self):
         tail = self.body[-1]
-        dx, dy = self.dirnx, self.dirny
+        dx, dy = tail.dirnx, tail.dirny
 
         if dx == 1 and dy == 0:
             self.body.append(Cube((tail.pos[0] - 1, tail.pos[1])))
@@ -136,10 +135,9 @@ def drawGrid(w, rows, surface):
 
     x = 0
     y = 0
-
     for l in range(rows):
-        x += sizeBtwn
-        y += sizeBtwn
+        x = x + sizeBtwn
+        y = y + sizeBtwn
 
         pygame.draw.line(surface, (255, 255, 255), (x, 0), (x, w))
         pygame.draw.line(surface, (255, 255, 255), (0, y), (w, y))
@@ -152,7 +150,7 @@ def randomSnack(rows, item):
         x = random.randrange(1, rows - 1)
         y = random.randrange(1, rows - 1)
 
-        if len(list(filter(lambda z: z.pos == (x, y), positions))):
+        if len(list(filter(lambda z: z.pos == (x, y), positions))) > 0:
             continue
         else:
             break
@@ -174,17 +172,19 @@ def main():
         clock.tick(10)
         s.move()
         headPos = s.head.pos
+
         if headPos[0] >= 20 or headPos[0] < 0 or headPos[1] >= 20 or headPos[1] < 0:
-            print("Score: ", len(s.body))
-            s.reset(10, 10)
+            print("Score:", len(s.body))
+            s.reset((10, 10))
+
         if s.body[0].pos == snack.pos:
             s.addCube()
             snack = Cube(randomSnack(rows, s), color=(0, 255, 0))
 
         for x in range(len(s.body)):
-            if s.body[x].pos in list(map(lambda z:z.pos, s.body[x + 1:]))
+            if s.body[x].pos in list(map(lambda z: z.pos, s.body[x + 1:])):
                 print("Score:", len(s.body))
-                s.reset((10,10))
+                s.reset((10, 10))
                 break
 
         redrawWindow()
