@@ -39,8 +39,8 @@ class Cube:
             radius = 3
             circleMiddle = (i * dis + center - radius, j * dis + 8)
             circleMiddle2 = (i * dis + dis - radius * 2, j * dis + 8)
-            pygame.draw.circle(surface, (0,0,0), circleMiddle, radius)
-            pygame.draw.circle(surface, (0,0,0), circleMiddle2, radius)
+            pygame.draw.circle(surface, (0, 0, 0), circleMiddle, radius)
+            pygame.draw.circle(surface, (0, 0, 0), circleMiddle2, radius)
 
 
 class Snake:
@@ -65,19 +65,19 @@ class Snake:
                 if key[pygame.K_LEFT]:
                     self.dirnx = -1
                     self.dirny = 0
-                    self.turns[self.head.pos[:]] = [self.dirnx,self.dirny]
+                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
                 elif key[pygame.K_RIGHT]:
                     self.dirnx = 1
                     self.dirny = 0
-                    self.turns[self.head.pos[:]] = [self.dirnx,self.dirny]
+                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
                 elif key[pygame.K_UP]:
                     self.dirny = -1
                     self.dirnx = 0
-                    self.turns[self.head.pos[:]] = [self.dirnx,self.dirny]
+                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
                 elif key[pygame.K_DOWN]:
                     self.dirny = 1
                     self.dirnx = 0
-                    self.turns[self.head.pos[:]] = [self.dirnx,self.dirny]
+                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
 
         for i, c in enumerate(self.body):
             p = c.pos[:]
@@ -88,7 +88,6 @@ class Snake:
                     self.turns.pop(p)
             else:
                 c.move(self.dirnx, self.dirny)
-
 
     def reset(self, pos):
         self.head = cube(pos)
@@ -105,11 +104,11 @@ class Snake:
         if dx == 1 and dy == 0:
             self.body.append(Cube((tail.pos[0] - 1, tail.pos[1])))
         elif dx == -1 and dy == 0:
-            self.body.append(Cube((tail.pos[0]+1,tail.pos[1])))
+            self.body.append(Cube((tail.pos[0] + 1, tail.pos[1])))
         elif dx == 0 and dy == 1:
-            self.body.append(Cube((tail.pos[0],tail.pos[1]-1)))
+            self.body.append(Cube((tail.pos[0], tail.pos[1] - 1)))
         elif dx == 0 and dy == -1:
-            self.body.append(Cube((tail.pos[0],tail.pos[1]+1)))
+            self.body.append(Cube((tail.pos[0], tail.pos[1] + 1)))
 
         self.body[-1].dirnx = dx
         self.body[-1].dirny = dy
@@ -142,8 +141,8 @@ def drawGrid(w, rows, surface):
         x += sizeBtwn
         y += sizeBtwn
 
-        pygame.draw.line(surface, (255,255,255), (x, 0) ,(x, w))
-        pygame.draw.line(surface, (255,255,255), (0, y), (w, y))
+        pygame.draw.line(surface, (255, 255, 255), (x, 0), (x, w))
+        pygame.draw.line(surface, (255, 255, 255), (0, y), (w, y))
 
 
 def randomSnack(rows, item):
@@ -153,7 +152,7 @@ def randomSnack(rows, item):
         x = random.randrange(1, rows - 1)
         y = random.randrange(1, rows - 1)
 
-        if len(list(filter(lambda z:z.pos == (x, y), positions))):
+        if len(list(filter(lambda z: z.pos == (x, y), positions))):
             continue
         else:
             break
@@ -162,4 +161,33 @@ def randomSnack(rows, item):
 
 
 def main():
-    pass
+    global s, snack, win
+    win = pygame.display.set_mode((width, height))
+    s = Snake((255, 0, 0), (10, 10))
+    s.addCube()
+    snack = Cube(randomSnack(rows, s), color=(0, 255, 0))
+    flag = True
+    clock = pygame.time.Clock()
+
+    while flag:
+        pygame.time.delay(50)
+        clock.tick(10)
+        s.move()
+        headPos = s.head.pos
+        if headPos[0] >= 20 or headPos[0] < 0 or headPos[1] >= 20 or headPos[1] < 0:
+            print("Score: ", len(s.body))
+            s.reset(10, 10)
+        if s.body[0].pos == snack.pos:
+            s.addCube()
+            snack = Cube(randomSnack(rows, s), color=(0, 255, 0))
+
+        for x in range(len(s.body)):
+            if s.body[x].pos in list(map(lambda z:z.pos, s.body[x + 1:]))
+                print("Score:", len(s.body))
+                s.reset((10,10))
+                break
+
+        redrawWindow()
+
+
+main()
