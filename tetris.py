@@ -170,4 +170,39 @@ def convertShapeFormat(shape):
 
 
 def validSpace(shape, grid):
+    acceptedPositions = [[(j, i) for j in range(10) if grid[i][j] == (0, 0, 0)] for i in range(20)]
+    acceptedPositions = [j for sub in acceptedPositions for j in sub]
+    formatted = convertShapeFormat(shape)
+
+    for pos in formatted:
+        if pos not in acceptedPositions:
+            if pos[1] > -1:
+                return False
+
+    return True
+
+
+def checkLost(positions):
+    for pos in positions:
+        x, y = pos
+        if y < 1:
+            return T
+    return False
+
+
+def getShape():
+    global shapes, shapeColors
+
+    return Piece(5, 0, random.choice(shapes))
+
+
+def drawTextMiddle(text, size, color, surface):
+    font = pygame.font.SysFont('comicsans', size, bold=True)
+    label = font.render(text, 1, color)
+
+    surface.blit(label, (topLeft_x + playWidth / 2 - (label.get_width() / 2), topLeft_y + playHeight / 2 -
+                         label.get_height() / 2))
+
+
+def drawGrid(surface, row, col):
     pass
