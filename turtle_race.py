@@ -1,6 +1,7 @@
 import math
 import random
 import turtle
+
 # import time
 
 win_length = 500
@@ -11,6 +12,7 @@ turtle.screensize(win_length, win_height)
 
 
 class racer(object):
+
     def __init__(self, color, pos):
         self.pos = pos
         self.color = color
@@ -93,6 +95,15 @@ def startGame():
 
     file.close()
 
+
+bg = input("What color do you want the background to be: ").lower()
+
+
+try:
+    turtle.bgcolor(bg)
+except:
+    print("Sorry, that is an invalid response. Please try again...")
+    bg = input("What color do you want the background to be: ").lower()
 
 start = input('Would you like to play: ')
 
