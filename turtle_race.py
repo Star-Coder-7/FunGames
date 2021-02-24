@@ -1,22 +1,22 @@
 import math
 import random
 import turtle
-import time
+# import time
 
-winLength = 500
-winHeight = 500
+win_length = 500
+win_height = 500
 
-turtles = 13
+turtles = 8
+turtle.screensize(win_length, win_height)
 
-turtle.screensize(winLength, winHeight)
 
-
-class Racer(object):
+class racer(object):
     def __init__(self, color, pos):
         self.pos = pos
         self.color = color
         self.turt = turtle.Turtle()
         self.turt.shape('turtle')
+        self.turt.color(color)
         self.turt.penup()
         self.turt.setpos(pos)
         self.turt.setheading(90)
@@ -35,7 +35,7 @@ class Racer(object):
 def setupFile(name, colors):
     file = open(name, 'w')
     for color in colors:
-        file.write(color + '0 \n')
+        file.write(color + ' 0 \n')
     file.close()
 
 
@@ -43,12 +43,11 @@ def startGame():
     tList = []
     turtle.clearscreen()
     turtle.hideturtle()
-    colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'gray', 'cyan', 'turquoise',
-              'black', 'maroon']
-    start = -(winLength / 2) + 20
+    colors = ['red', 'green', 'blue', 'yellow', 'pink', 'orange', 'purple', 'black', 'grey']
+    start = -(win_length / 2) + 20
     for t in range(turtles):
-        newPosX = start + t * winLength // turtles
-        tList.append(Racer(colors[t], (newPosX, -230)))
+        newPosX = start + t * (win_length) // turtles
+        tList.append(racer(colors[t], (newPosX, -230)))
         tList[t].turt.showturtle()
 
     run = True
@@ -61,15 +60,15 @@ def startGame():
         for t in tList:
             if t.pos[1] > 230 and t.pos[1] > maxDis:
                 maxDis = t.pos[1]
-                maxColor = [t.color]
+                maxColor = []
+                maxColor.append(t.color)
             elif t.pos[1] > 230 and t.pos[1] == maxDis:
                 maxDis = t.pos[1]
-                maxColor = [t.color]
+                maxColor.append(t.color)
 
         if len(maxColor) > 0:
             run = False
-            print("The winner is: ")
-            time.sleep(3)
+            print('The winner is: ')
             for win in maxColor:
                 print(win)
 
@@ -95,23 +94,18 @@ def startGame():
     file.close()
 
 
-bg = input("What color do you want the background to be: ")
-try:
-    turtle.bgcolor(bg)
-except:
-    print("Sorry, that isn't a color. Please try again...")
-    bg = input("What color do you want the background to be: ")
-
-start = input("Would you like to play?\n Enter yes if you want to play, no if you don't: ").lower()
+start = input('Would you like to play: ')
 
 if start == 'y' or start == 'yes':
-    print("Ok, let's begin the game...")
     startGame()
-elif start == 'n' or start == 'no':
-    print("Thank you for interacting with IntelliJ IDEA.")
 else:
-    print("Sorry, that is an invalid response. Please enter a valid response.")
-    start = input("Would you like to play?\n Enter yes if you want to play, no if you don't: ").lower()
+    print("Ok, maybe next time...")
 
-if startGame() is False:
-    print("Thx")
+while True:
+    print('-----------------------------------')
+    start = input('Would you like to play again: ').lower()
+
+    if start == 'y' or start == 'yes':
+        startGame()
+    else:
+        print("Ok, maybe next time...")
