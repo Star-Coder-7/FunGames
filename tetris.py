@@ -255,4 +255,6 @@ def drawNextShape(shape, surface):
 
 
 def drawWindow(surface):
+    surface.fill((0, 0, 0))
+    # Tetris title
     pass
