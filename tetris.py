@@ -257,4 +257,42 @@ def drawNextShape(shape, surface):
 def drawWindow(surface):
     surface.fill((0, 0, 0))
     # Tetris title
-    pass
+    font = pygame.font.SysFont('comicsans', 60)
+    label = font.render('TETRIS', 1, (255, 255, 255))
+
+    surface.blit(label, (topLeft_x + playWidth / 2 - (label.get_width() / 2), 30))
+
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            pygame.draw.rect(surface, grid[i][j], (topLeft_x + j * 30, topLeft_y + i * 30, 30, 30), 0)
+
+    # draw grid and border
+    drawGrid(surface, 20, 10)
+    pygame.draw.rect(surface, (255, 0, 0), (topLeft_x, topLeft_y, playWidth, playHeight), 5)
+    # pygame.display.update()
+
+
+def main():
+    global grid
+
+    lockedPositions = {}   # (x,y):(255,0,0)
+    grid = createGrid(lockedPositions)
+
+    changePiece = False
+    run = True
+    currentPiece = getShape()
+    nextPiece = getShape()
+    clock = pygame.time.Clock()
+    fallTime = 0
+    levelTime = 0
+    fallSpeed = 0.27
+    score = 0
+
+    while run:
+        grid = createGrid(lockedPositions)
+        fallTime += clock.get_rawtime()
+        levelTime += clock.get_rawtime()
+        clock.tick()
+
+        if fallTime / 1000 > 4:
+            pass
