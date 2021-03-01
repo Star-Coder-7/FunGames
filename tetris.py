@@ -305,4 +305,46 @@ def main():
             fallTime = 0
             currentPiece.y += 1
             if not (validSpace(currentPiece, grid)) and currentPiece.y > 0:
-                pass
+                currentPiece.y -= 1
+                changePiece = True
+
+        for event in pygame.event.get():
+            if event.type == pygame.quit():
+                run = False
+                pygame.display.quit()
+                quit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                    currentPiece.x -= 1
+                    if not validSpace(currentPiece, grid):
+                        currentPiece.x += 1
+
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                    currentPiece.x += 1
+                    if not validSpace(currentPiece, grid):
+                        currentPiece.x -= 1
+
+                elif event.key == pygame.K_UP or event.key == pygame.K_w:
+                    # rotate the shape
+                    currentPiece.rotation += 1 % len(currentPiece.shape)
+                    if not validSpace(currentPiece, grid):
+                        currentPiece.rotation -= 1 % len(currentPiece.shape)
+
+                elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                    # move shape down
+                    currentPiece.y += 1
+                    if not validSpace(currentPiece, grid):
+                        currentPiece.y -= 1
+
+        shapePos = convertShapeFormat(currentPiece)
+
+        # add the piece to the grid for drawing
+        for i in range(len(shapePos)):
+            x, y = shapePos[i]
+            if y > -1:
+                grid[y][x] = currentPiece.color
+
+        # IF THE PIECE HITS THE GROUND
+        if changePiece:
+            pass
