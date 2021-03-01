@@ -12,8 +12,8 @@ pygame.font.init()
 # GLOBALS VARS
 sWidth = 800
 sHeight = 700
-playWidth = 300     # meaning 300 // 10 = 30 width per block
-playHeight = 600    # meaning 600 // 20 = 20 height per block
+playWidth = 300  # meaning 300 // 10 = 30 width per block
+playHeight = 600  # meaning 600 // 20 = 20 height per block
 blockSize = 30
 
 topLeft_x = (sWidth - playWidth) // 2
@@ -81,26 +81,26 @@ J = [['.....',
       '.00..',
       '.....']]
 
-L =  [['.....',
-       '...0.',
-       '.000.',
-       '.....',
-       '.....'],
-      ['.....',
-       '..0..',
-       '..0..',
-       '..00.',
-       '.....'],
-      ['.....',
-       '.....',
-       '.000.',
-       '.0...',
-       '.....'],
-      ['.....',
-       '.00..',
-       '..0..',
-       '..0..',
-       '.....']]
+L = [['.....',
+      '...0.',
+      '.000.',
+      '.....',
+      '.....'],
+     ['.....',
+      '..0..',
+      '..0..',
+      '..00.',
+      '.....'],
+     ['.....',
+      '.....',
+      '.000.',
+      '.0...',
+      '.....'],
+     ['.....',
+      '.00..',
+      '..0..',
+      '..0..',
+      '.....']]
 
 T = [['.....',
       '..0..',
@@ -126,6 +126,7 @@ T = [['.....',
 shapes = [S, Z, I, O, J, L, T]
 shapeColors = [(255, 255, 255), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255), (0, 255, 255),
                (255, 165, 0), (128, 0, 128)]
+
 
 # index 0 - 6 represent shape
 
@@ -208,9 +209,9 @@ def drawGrid(surface, row, col):
     sx = topLeft_x
     sy = topLeft_y
     for i in range(row):
-        pygame.draw.line(surface, (128, 128, 128), (sx, sy + i * 30), (sx + playWidth, sy + i * 30))    # horizontal
+        pygame.draw.line(surface, (128, 128, 128), (sx, sy + i * 30), (sx + playWidth, sy + i * 30))  # horizontal
         for j in range(col):
-            pygame.draw.line(surface, (128, 128, 128), (sx + j * 30, sy), (sx + j * 30, sy + playHeight))   # vertical
+            pygame.draw.line(surface, (128, 128, 128), (sx + j * 30, sy), (sx + j * 30, sy + playHeight))  # vertical
 
 
 def clearRows(grid, locked):
@@ -275,7 +276,7 @@ def drawWindow(surface):
 def main():
     global grid
 
-    lockedPositions = {}   # (x,y):(255,0,0)
+    lockedPositions = {}  # (x,y):(255,0,0)
     grid = createGrid(lockedPositions)
 
     changePiece = False
@@ -294,5 +295,14 @@ def main():
         levelTime += clock.get_rawtime()
         clock.tick()
 
-        if fallTime / 1000 > 4:
-            pass
+        if levelTime / 1000 > 4:
+            levelTime = 0
+            if fallSpeed > 0.15:
+                fallSpeed -= 0.005
+
+        # PIECE FALLING CODE
+        if fallTime / 1000 >= fallSpeed:
+            fallTime = 0
+            currentPiece.y += 1
+            if not (validSpace(currentPiece, grid)) and currentPiece.y > 0:
+                pass
