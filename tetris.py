@@ -140,6 +140,7 @@ class Piece(object):
         self.y = row
         self.shape = shape
         self.color = shapeColors[shapes.index(shape)]
+        self.rotation = 0   # number from 0-3
 
 
 def createGrid(lockedPositions={}):
@@ -215,7 +216,7 @@ def drawGrid(surface, row, col):
 
 
 def clearRows(grid, locked):
-    # need to see if row is clear the shift every other row above down one
+    # Need to see if row is clear the shift every other row above down one
 
     inc = 0
     for i in range(len(grid) - 1, - 1, - 1):
@@ -270,6 +271,7 @@ def drawWindow(surface):
     # draw grid and border
     drawGrid(surface, 20, 10)
     pygame.draw.rect(surface, (255, 0, 0), (topLeft_x, topLeft_y, playWidth, playHeight), 5)
+
     # pygame.display.update()
 
 
@@ -347,4 +349,48 @@ def main():
 
         # IF THE PIECE HITS THE GROUND
         if changePiece:
-            pass
+            for pos in shapePos:
+                p = (pos[0], pos[1])
+                lockedPositions[p] = currentPiece.color
+
+            currentPiece = nextPiece
+            nextPiece = getShape()
+            changePiece = False
+
+            # call four times to check for multiple clear rows
+            if clearRows(grid, lockedPositions):
+                score += 10
+
+        drawWindow(win)
+        drawNextShape(nextPiece, win)
+        pygame.display.update()
+
+        # Check if the user lost
+        if checkLost(lockedPositions):
+            run = False
+
+    drawTextMiddle("You Lost!", 40, (255, 255, 255), win)
+    pygame.display.update()
+    pygame.time.delay(2000)
+
+
+def mainMenu():
+    run = True
+
+    while run:
+        win.fill((0, 0, 0))
+        drawTextMiddle('Press any key to begin...', 60, (255, 255, 255), win)
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.KEYDOWN:
+                main()
+
+    pygame.quit()
+
+
+win = pygame.display.set_mode((sWidth, sHeight))
+pygame.display.set_caption('TETRIS')
+
+mainMenu()  # Start the game
