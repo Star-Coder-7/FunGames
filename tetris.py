@@ -317,32 +317,34 @@ def main():
                 quit()
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
+                # move left
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     current_piece.x -= 1
                     if not validSpace(current_piece, grid):
                         current_piece.x += 1
 
-                elif event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                    # move right
                     current_piece.x += 1
                     if not validSpace(current_piece, grid):
                         current_piece.x -= 1
-                elif event.key == pygame.K_UP:
+
+                elif event.key == pygame.K_UP or event.key == pygame.K_w:
                     # rotate shape
                     current_piece.rotation = current_piece.rotation + 1 % len(current_piece.shape)
                     if not validSpace(current_piece, grid):
                         current_piece.rotation = current_piece.rotation - 1 % len(current_piece.shape)
 
-                if event.key == pygame.K_DOWN:
+                elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     # move shape down
                     current_piece.y += 1
                     if not validSpace(current_piece, grid):
                         current_piece.y -= 1
 
-                '''if event.key == pygame.K_SPACE:
-                    while valid_space(current_piece, grid):
-                        current_piece.y += 1
-                    current_piece.y -= 1
-                    print(convert_shape_format(current_piece))'''  # todo fix
+                elif event.key == pygame.K_SPACE or event.key == pygame.K_q:
+                    run = False
+                    pygame.quit()
+                    quit()
 
         shape_pos = convertShapeFormat(current_piece)
 

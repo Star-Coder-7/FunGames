@@ -79,7 +79,7 @@ class Snake:
                     self.dirny = 1
                     self.dirnx = 0
                     self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
-                elif keys[pygame.K_SPACE] or keys[pygame.K_RETURN]:
+                elif keys[pygame.K_SPACE] or keys[pygame.K_RETURN] or keys[pygame.K_q]:
                     quit()
                     print("Score:", len(s.body) - 1)
                     print('\n', scores)
