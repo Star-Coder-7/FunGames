@@ -105,4 +105,23 @@ class Board:
                         s = (i, j)
 
     def getDangerMoves(self, color):
+        dangerMoves = []
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.board[i][j] != 0:
+                    if self.board[i][j].color != color:
+                        for move in self.board[i][j].moveList:
+                            dangerMoves.append(move)
+
+    def isChecked(self, color):
+        self.updateMoves()
+        dangerMoves = self.getDangerMoves(color)
+        kingPos = (-1, -1)
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.board[i][j] != 0:
+                    if self.board[i][j].king and self.board[i][j].color == color:
+                        kingPos = (j, i)
+
+    def select(self, col, row, color):
         pass
