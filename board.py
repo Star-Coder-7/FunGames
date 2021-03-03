@@ -152,8 +152,8 @@ class Board:
             else:
                 if self.board[prev[0]][prev[1]].color != self.board[row][col].color:
                     moves = self.board[prev[0]][prev[1]].moveList
-                    if (col, row) in in moves:
-                        changed = self.moved(prev, (row, col), color)
+                    if (col, row) in moves:
+                        changed = self.move(prev, (row, col), color)
 
                     if self.board[row][col].color == color:
                         self.board[row][col].selected = True
@@ -162,8 +162,8 @@ class Board:
                     if self.board[row][col].color == color:
                         # castling
                         self.resetSelected()
-                        if self.board[prev[0]][prev[1]].moved == False and self.board[prev[0]][prev[1]].rook and \
-                            self.board[row][col].king and col != prev[1] and prev!=(-1,-1):
+                        if self.board[prev[0]][prev[1]].moved is False and self.board[prev[0]][prev[1]].rook and \
+                            self.board[row][col].king and col != prev[1] and prev != (-1, -1):
                             castle = True
                             if prev[1] < col:
                                 for j in range(prev[1] + 1, col):
@@ -172,7 +172,7 @@ class Board:
 
                                 if castle:
                                     changed = self.move(prev, (row, 3), color)
-                                    changed = self.move((row,col), (row, 2), color)
+                                    changed = self.move((row, col), (row, 2), color)
                                 if not changed:
                                     self.board[row][col].selected = True
 
@@ -183,7 +183,7 @@ class Board:
 
                                 if castle:
                                     changed = self.move(prev, (row, 6), color)
-                                    changed = self.move((row,col), (row, 5), color)
+                                    changed = self.move((row, col), (row, 5), color)
                                 if not changed:
                                     self.board[row][col].selected = True
 
