@@ -123,5 +123,34 @@ class Board:
                     if self.board[i][j].king and self.board[i][j].color == color:
                         kingPos = (j, i)
 
+        if kingPos in dangerMoves:
+            return True
+
+        return False
+
     def select(self, col, row, color):
-        pass
+        changed = False
+        prev = (-1, -1)
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.board[i][j] != 0:
+                    if self.board[i][j].selected:
+                        prev = (i, j)
+
+        # If piece
+        if self.board[row][col] == 0 and prev != (-1, -1):
+            moves = self.board[prev[0]][prev[1]].moveList
+            if (col, row) in moves:
+                changed = self.move(prev, (row, col), color)
+
+        else:
+            if prev == (-1, -1):
+                self.resetSelected()
+                if self.board[row][col] != 0:
+                    self.board[row][col].selected = True
+
+            else:
+                if self.board[prev[0]][prev[1]].color != self.board[row][col].color:
+                    moves = self.board[prev[0]][prev[1]].moveList
+                    if (col, row) in in moves:
+                        pass
