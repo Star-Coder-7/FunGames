@@ -500,4 +500,53 @@ class Rook(Piece):
     img = 5
 
     def validMoves(self, board):
-        pass
+        i = self.row
+        j = self.col
+
+        moves = []
+
+        # UP
+        for x in range(i - 1, -1, -1):
+            p = board[x][j]
+            if p == 0:
+                moves.append((j, x))
+            elif p.color != self.color:
+                moves.append((j, x))
+                break
+            else:
+                break
+
+        # DOWN
+        for x in range(i + 1, 8, 1):
+            p = board[x][j]
+            if p == 0:
+                moves.append((j, x))
+            elif p.color != self.color:
+                moves.append((j, x))
+                break
+            else:
+                break
+
+        # LEFT
+        for x in range(j - 1, -1, -1):
+            p = board[i][x]
+            if p == 0:
+                moves.append((x, i))
+            elif p.color != self.color:
+                moves.append((x, i))
+                break
+            else:
+                break
+
+        # RIGHT
+        for x in range(j + 1, 8, 1):
+            p = board[i][x]
+            if p == 0:
+                moves.append((x, i))
+            elif p.color != self.color:
+                moves.append((x, i))
+                break
+            else:
+                break
+
+        return moves
