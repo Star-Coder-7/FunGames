@@ -153,4 +153,109 @@ class Board:
                 if self.board[prev[0]][prev[1]].color != self.board[row][col].color:
                     moves = self.board[prev[0]][prev[1]].moveList
                     if (col, row) in in moves:
-                        pass
+                        changed = self.moved(prev, (row, col), color)
+
+                    if self.board[row][col].color == color:
+                        self.board[row][col].selected = True
+
+                else:
+                    if self.board[row][col].color == color:
+                        # castling
+                        self.resetSelected()
+                        if self.board[prev[0]][prev[1]].moved == False and self.board[prev[0]][prev[1]].rook and \
+                            self.board[row][col].king and col != prev[1] and prev!=(-1,-1):
+                            castle = True
+                            if prev[1] < col:
+                                for j in range(prev[1] + 1, col):
+                                    if self.board[row][j] != 0:
+                                        castle = False
+
+                                if castle:
+                                    changed = self.move(prev, (row, 3), color)
+                                    changed = self.move((row,col), (row, 2), color)
+                                if not changed:
+                                    self.board[row][col].selected = True
+
+                            else:
+                                for j in range(col + 1, prev[1]):
+                                    if self.board[row][j] != 0:
+                                        castle = False
+
+                                if castle:
+                                    changed = self.move(prev, (row, 6), color)
+                                    changed = self.move((row,col), (row, 5), color)
+                                if not changed:
+                                    self.board[row][col].selected = True
+
+                        else:
+                            self.board[row][col].selected = True
+
+        if changed:
+            if self.turn == "w":
+                self.turn = "b"
+                self.resetSelected()
+            else:
+                self.turn = "w"
+                self.resetSelected()
+
+    def resetSelected(self):
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.board[i][j] != 0:
+                    self.board[i][j].selected = False
+
+    def checkMate(self, color):
+        # if self.isChecked(color):
+        #     king = None
+        #     for i in range(self.rows):
+        #         for j in range(self.cols):
+        #             if self.board[i][j] != 0:
+        #                 if self.board[i][j].king and self.board[i][j].color == color:
+        #                     king = self.board[i][j]
+        #     if king is not None:
+        #         validMoves = king.validMoves(self.board)
+        #         dangerMoves = self.getDangerMoves(color)
+        #         dangerCount = 0
+        #         for move in validMoves:
+        #             if move in dangerMoves:
+        #                 dangerCount += 1
+        #         return dangerCount == len(validMoves)
+
+        return False
+
+    def move(self, start, end, color):
+        checkedBefore = self.isChecked(color)
+        changed = True
+        nBoard = self.board[:]
+
+        if nBoard[start[0]][start[1]].pawn:
+            nBoard[start[0]][start[1]].first = False
+
+        nBoard[start[0]][start[1]].changePos((end[0], end[1]))
+        nBoard[end[0]][end[1]] = nBoard[start[0]][start[1]]
+        nBoard[start[0]][start[1]] = 0
+        self.board = nBoard
+
+        if self.isChecked(color) or (checkedBefore and self.isChecked(color)):
+            changed = False
+            nBoard = self.board[:]
+            if nBoard[end[0]][end[1]].pawn:
+                nBoard[end[0]][end[1]].first = True
+
+            nBoard[end[0]][end[1]].changePos((start[0], start[1]))
+            nBoard[start[0]][start[1]] = nBoard[end[0]][end[1]]
+            nBoard[end[0]][end[1]] = 0
+            self.board = nBoard
+        else:
+            self.resetSelected()
+
+        self.updateMoves()
+        if changed:
+            self.last = [start, end]
+            if self.turn == "w":
+                self.storedTime1 += (time.time() - self.startTime)
+            else:
+                self.storedTime2 += (time.time() - self.startTime)
+            self.startTime = time.time()
+
+        return changed
