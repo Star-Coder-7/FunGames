@@ -177,7 +177,7 @@ while True:
         print("[CONNECT] New connection")
 
         for game in games.keys():
-            if games[game].ready == False:
+            if games[game].ready is False:
                 g = game
 
         if g == -1:

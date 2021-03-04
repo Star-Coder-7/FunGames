@@ -27,4 +27,27 @@ def menuScreen(win, name):
         smallFont = pygame.font.SysFont("comicsans", 50)
 
         if offline:
-            pass
+            off = smallFont.render("Server Offline, Try Again Later...", 1, (255, 0, 0))
+            win.blit(off, (width / 2 - off.get_width() / 2, 500))
+
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                run = False
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                offline = False
+                try:
+                    bo = connect()
+                    run = False
+                    main()
+                    break
+                except:
+                    print("Server Offline")
+                    offline = True
+
+
+def redrawGameWindow(win, bo, p1, p2, color, ready)):
+    pass
