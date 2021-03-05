@@ -57,4 +57,11 @@ def redrawGameWindow(win, bo, p1, p2, color, ready):
     formatTime2 = str(int(p2 // 60)) + ":" + str(int(p2 % 60))
 
     if int(p1 % 60) < 10:
+        formatTime1 = formatTime1[:-1] + "0" + formatTime1[-1]
+    if int(p2%60) < 10:
+        formatTime2 = formatTime2[:-1] + "0" + formatTime2[-1]
+
+    font = pygame.font.SysFont('comicsans', 30)
+
+    try:
         pass
