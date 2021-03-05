@@ -64,4 +64,22 @@ def redrawGameWindow(win, bo, p1, p2, color, ready):
     font = pygame.font.SysFont('comicsans', 30)
 
     try:
-        pass
+        txt = font.render(bo.p1Name + "Time: " + str(formatTime2), 1, (255, 255, 255))
+        txt2 = font.render(bo.p2Name + "Time: " + str(formatTime1), 1, (255,255,255))
+    except Exception as e:
+        print(e)
+
+    win.blit(txt, (520, 10))
+    win.blit(txt2, (520, 700))
+
+    txt = font.render("Press q to Quit", 1, (255, 255, 255))
+    win.blit(txt, (10, 20))
+
+    if color == 's':
+        txt3 = font.render("SPECTATOR MODE", 1, (255, 0, 0))
+        win.blit(txt3, (width / 2 - txt3.get_width() / 2, 10))
+
+    if not ready:
+        show = "Waiting for Player"
+        if color == 's':
+            pass
