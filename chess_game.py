@@ -49,5 +49,12 @@ def menuScreen(win, name):
                     offline = True
 
 
-def redrawGameWindow(win, bo, p1, p2, color, ready)):
-    pass
+def redrawGameWindow(win, bo, p1, p2, color, ready):
+    win.blit(board, (0, 0))
+    bo.draw(win, color)
+
+    formatTime1 = str(int(p1 // 60)) + ":" + str(int(p1 % 60))
+    formatTime2 = str(int(p2 // 60)) + ":" + str(int(p2 % 60))
+
+    if int(p1 % 60) < 10:
+        pass
