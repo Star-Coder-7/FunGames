@@ -204,8 +204,7 @@ class Board:
                 if self.board[i][j] != 0:
                     self.board[i][j].selected = False
 
-    @staticmethod
-    def checkMate():    # self and color are my two parameters
+    def checkMate(self):    # self and color are my two parameters
         # if self.isChecked(color):
         #     king = None
         #     for i in range(self.rows):
