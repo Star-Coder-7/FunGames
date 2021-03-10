@@ -1,243 +1,202 @@
-'''
-the main game
-author: Shiven Singhal
-'''
+"""
+The main game / the driver file.
+"""
 
 import pygame
-import os
-import time
-from client import Network
-import pickle
+import engine
 
+pygame.init()
 pygame.font.init()
 
-board = pygame.transform.scale(pygame.image.load(os.path.join("img3", "board.png")), (750, 750))
-chessbg = pygame.image.load(os.path.join("img3", "chessbg.png"))
-rect = (113, 113, 525, 525)
+WIDTH = HEIGHT = 720
+DIMENSIONS = 8
+SQ_SIZE = HEIGHT // DIMENSIONS
+MAX_FPS = 15
+IMAGES = {}
 
-turn = "w"
-
-
-def menuScreen(win, name):
-    global bo, chessbg
-    run = True
-    offline = False
-
-    while run:
-        win.blit(chessbg, (0, 0))
-        smallFont = pygame.font.SysFont("comicsans", 50)
-
-        if offline:
-            off = smallFont.render("Server Offline, Try Again Later...", 1, (255, 0, 0))
-            win.blit(off, (width / 2 - off.get_width() / 2, 500))
-
-        pygame.display.update()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                run = False
-
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                offline = False
-                try:
-                    bo = connect()
-                    run = False
-                    main()
-                    break
-                except:
-                    print("Server Offline")
-                    offline = True
+'''
+Initialize a global dictionary of images. This will only be called once in the main.
+'''
 
 
-def redrawGameWindow(win, bo, p1, p2, color, ready):
-    win.blit(board, (0, 0))
-    bo.draw(win, color)
-
-    formatTime1 = str(int(p1 // 60)) + ":" + str(int(p1 % 60))
-    formatTime2 = str(int(p2 // 60)) + ":" + str(int(p2 % 60))
-
-    if int(p1 % 60) < 10:
-        formatTime1 = formatTime1[:-1] + "0" + formatTime1[-1]
-    if int(p2 % 60) < 10:
-        formatTime2 = formatTime2[:-1] + "0" + formatTime2[-1]
-
-    font = pygame.font.SysFont('comicsans', 30)
-
-    try:
-        txt = font.render(bo.p1Name + "Time: " + str(formatTime2), 1, (255, 255, 255))
-        txt2 = font.render(bo.p2Name + "Time: " + str(formatTime1), 1, (255, 255, 255))
-    except Exception as e:
-        print(e)
-
-    win.blit(txt, (520, 10))
-    win.blit(txt2, (520, 700))
-
-    txt = font.render("Press q to Quit", 1, (255, 255, 255))
-    win.blit(txt, (10, 20))
-
-    if color == 's':
-        txt3 = font.render("SPECTATOR MODE", 1, (255, 0, 0))
-        win.blit(txt3, (width / 2 - txt3.get_width() / 2, 10))
-
-    if not ready:
-        show = "Waiting for Player"
-        if color == 's':
-            show = "Waiting for Players"
-
-        font = pygame.font.SysFont("comicsans", 80)
-        txt = font.render(show, 1, (255, 0, 0))
-        win.blit(txt, (width / 2 - txt.get_width() / 2, 300))
-
-    if not color == "s":
-        font = pygame.font.SysFont("comicsans", 30)
-        if color == "w":
-            txt3 = font.render("YOU ARE WHITE", 1, (0, 0, 255))
-            win.blit(txt3, (width / 2 - txt3.get_width() / 2, 10))
-        else:
-            txt3 = font.render("YOU ARE BLACK", 1, (0, 0, 255))
-            win.blit(txt3, (width / 2 - txt3.get_width() / 2, 10))
-
-        if bo.turn == color:
-            txt3 = font.render("YOUR TURN", 1, (0, 0, 255))
-            win.blit(txt3, (width / 2 - txt3.get_width() / 2, 10))
-        else:
-            txt3 = font.render("THEIR TURN", 1, (0, 0, 255))
-            win.blit(txt3, (width / 2 - txt3.get_width() / 2, 700))
-
-    pygame.display.update()
+def loadImages():
+    pieces = ['wR', 'wK', 'wN', 'wP', 'wQ', 'wB', 'bR', 'bK', 'bN', 'bP', 'bQ', 'bB']
+    for piece in pieces:
+        IMAGES[piece] = pygame.transform.scale(pygame.image.load("img3/" + piece + ".png"), (SQ_SIZE, SQ_SIZE))
+        # Notice that we can access any image by using the variable dictionary IMAGES[piece]
 
 
-def endScreen(win, text):
-    font = pygame.font.SysFont("comicsans", 80)
-    txt = font.render(text, 1, (255, 0, 255))
-    win.blit(txt, (width / 2 - txt.get_width() / 2, 300))
-    pygame.display.update()
-
-    pygame.time.set_timer(pygame.USEREVENT + 1, 3000)
-
-    run = True
-    while run:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-                run = False
-            elif event.type == pygame.KEYDOWN:
-                run = False
-            elif event.type == pygame.USEREVENT+1:
-                run = False
-
-
-def click(pos):
-    """
-    :return: pos (x, y) in range 0-7 0-7
-    """
-
-    x = pos[0]
-    y = pos[1]
-    if rect[0] < x < rect[0] + rect[2]:
-        if rect[1] < y < rect[1] + rect[3]:
-            divX = x - rect[0]
-            divY = y - rect[1]
-
-            i = int(divX / (rect[2] / 8))
-            j = int(divY / (rect[3] / 8))
-
-            return i, j
-
-    return -1, -1
-
-
-def connect():
-    global n
-    n = Network()
-    return n.board
+'''
+This is the main driver code.
+'''
 
 
 def main():
-    global turn, bo, name
-
-    color = bo.start_user
-    count = 0
-
-    bo = n.send("update_moves")
-    bo = n.send("name " + name)
+    win = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("CHESS GAME")
     clock = pygame.time.Clock()
+    win.fill(pygame.Color('white'))
+    gs = engine.GameState()
+    validMoves = gs.getValidMoves()
+    gameOver = False
+
+    moveMade = False  # Keeps track of player clicks
+    animate = False   # Flag variable for when to animate
+    loadImages()  # Only done once every run
+    sqSelected = ()  # for the last square the user clicked
+    playerClicks = []  # keeps track of player clicks
 
     run = True
     while run:
-        if not color == "s":
-            p1Time = bo.time1
-            p2Time = bo.time2
-            if count == 60:
-                bo = n.send("get")
-                count = 0
-            else:
-                count += 1
-            clock.tick(30)
-
-        try:
-            redrawGameWindow(win, bo, p1Time, p2Time, color, bo.ready)
-        except Exception as e:
-            print(e)
-            endScreen(win, "Other PLayer Left")
-            run = False
-            break
-
-        if not color == "s":
-            if p1Time <= 0:
-                bo = n.send("winner b")
-            elif p2Time <= 0:
-                bo = n.send("winner w")
-
-            if bo.checkMate("b"):
-                bo = n.send("winner b")
-            elif bo.checkMate("w"):
-                    bo = n.send("winner w")
-
-        if bo.winner == "w":
-            endScreen(win, "White Wins!!!")
-            run = False
-        elif bo.winner == "b":
-            endScreen(win, "Black Wins!!!")
-            run = False
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-                quit()
-                pygame.quit()
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q and color != "s":
-                    # quit game
-                    if color == "w":
-                        bo = n.send("winner b")
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if not gameOver:
+                    location = pygame.mouse.get_pos()
+                    col = location[0] // SQ_SIZE
+                    row = location[1] // SQ_SIZE
+
+                    if sqSelected == (row, col):
+                        sqSelected = 0
+                        playerClicks = []
                     else:
-                        bo = n.send("winner w")
+                        sqSelected = (row, col)
+                        playerClicks.append(sqSelected)
 
-                if event.key == pygame.K_RIGHT:
-                    bo = n.send("forward")
+                    if len(playerClicks) == 2:
+                        move = engine.Move(playerClicks[0], playerClicks[1], gs.board)
+                        print(move.getChessNotation())
+                        for i in range(len(validMoves)):
+                            if move == validMoves[i]:
+                                gs.makeMove(validMoves[i])
+                                moveMade = True
+                                animate = True
+                                sqSelected = ()  # reset square selection
+                                playerClicks = []  # reset user clicks
+                            if not moveMade:
+                                playerClicks = [sqSelected]
 
-                if event.key == pygame.K_LEFT:
-                    bo = n.send("back")
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q or event.key == pygame.K_SPACE:
+                    run = False
+                elif event.key == pygame.K_u or event.key == pygame.K_z:
+                    gs.undoMove()
+                    moveMade = True
+                    animate = False
+                elif event.key == pygame.K_r or event.key == pygame.K_x:
+                    gs = engine.GameState()
+                    validMoves = gs.getValidMoves()
+                    sqSelected = ()
+                    playerClicks = []
+                    moveMade = False
+                    animate = False
 
-            if event.type == pygame.MOUSEBUTTONUP and color != "s":
-                if color == bo.turn and bo.ready:
-                    pos = pygame.mouse.get_pos()
-                    bo = n.send("update moves")
-                    i, j = click(pos)
-                    bo = n.send("select " + str(i) + " " + str(j) + " " + color)
+        if moveMade:
+            if animate:
+                animateMove(gs.moveLog[-1], win, gs.board, clock)
+            validMoves = gs.getValidMoves()
+            moveMade = False
+            animate = False
 
-    n.disconnect()
-    bo = 0
-    menuScreen(win)
+        drawGameState(win, gs, validMoves, sqSelected)
+
+        if gs.checkmate:
+            gameOver = True
+            if gs.whiteToMove:
+                drawText(win, "CONGRATULATIONS BLACK!!!\nYou won by a checkmate.")
+            else:
+                drawText(win, "CONGRATULATIONS WHITE!!!\nYou won by a checkmate.")
+        elif gs.stalemate:
+            gameOver = True
+            drawText(win, "STALEMATE!!!\nSorry, but the game has been tied due to a stalemate,")
+
+        clock.tick(MAX_FPS)
+        pygame.display.flip()
 
 
-name = input("Please type your name: ")
-width = 750
-height = 750
-win = pygame.display.set_mode((width, height))
-pygame.display.set_caption("CHESS GAME")
-menuScreen(win, name)
+def drawGameState(win, gs, validMoves, sqSelected):
+    """
+    Responsible for all the drawings amd graphics within a current game state.
+    :param win: The window
+    :param gs: Game State
+    :return: None
+    """
+
+    drawBoard(win)
+    highlightSquares(win, gs, validMoves, sqSelected)
+    drawPieces(win, gs.board)
+
+
+def drawBoard(win):
+    global colors
+    colors = [pygame.Color(232, 128, 128), pygame.Color(20, 62, 217)]
+    for r in range(DIMENSIONS):
+        for c in range(DIMENSIONS):
+            color = colors[((r + c) % 2)]
+            pygame.draw.rect(win, color, pygame.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
+
+def drawPieces(win, board):
+    for r in range(DIMENSIONS):
+        for c in range(DIMENSIONS):
+            piece = board[r][c]
+            if piece != "--":
+                win.blit(IMAGES[piece], pygame.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
+
+def highlightSquares(win, gs, validMoves, sqSelected):
+    # Highlight selected square first
+    if sqSelected != ():
+        r, c = sqSelected
+        if gs.board[r][c][0] == ('w' if gs.whiteToMove else 'b'):
+            s = pygame.Surface((SQ_SIZE, SQ_SIZE))
+            s.set_alpha(150)  # transparency value
+            s.fill(pygame.Color(38, 232, 16))
+            win.blit(s, (c * SQ_SIZE, r * SQ_SIZE))
+            # Highlight all the possible valid moves for the square selected
+            s.fill(pygame.Color(101, 10, 204))
+            for move in validMoves:
+                if move.startRow == r and move.startCol == c:
+                    win.blit(s, (move.endCol * SQ_SIZE, move.endRow * SQ_SIZE))
+
+
+'''
+Animating the chess pieces moving, not just a delete and draw
+'''
+
+
+def animateMove(move, win, board, clock):
+    global colors
+    dR = move.endRow - move.startRow
+    dC = move.endCol - move.startCol
+    framesPerSquare = 12
+    frameCount = (abs(dR) + abs(dC)) * framesPerSquare
+    for frame in range(frameCount + 1):
+        r, c = (move.startRow + dR * frame / frameCount, move.startCol + dC * frame / frameCount)
+        drawBoard(win)
+        drawPieces(win, board)
+        # erase the piece moved from its ending square
+        color = colors[(move.endRow + move.endCol) % 2]
+        endSquare = pygame.Rect(move.endCol * SQ_SIZE, move.endRow * SQ_SIZE, SQ_SIZE, SQ_SIZE)
+        pygame.draw.rect(win, color, endSquare)
+        # draw captured piece onto rectangle
+        if move.pieceCaptured != '--':
+            win.blit(IMAGES[move.pieceCaptured], endSquare)
+        # draw the moving piece
+        win.blit(IMAGES[move.pieceMoved], pygame.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+        pygame.display.flip()
+        clock.tick(60)
+
+
+def drawText(win, text):
+    font = pygame.font.SysFont("Helvetica", 22, True, True)
+    textObject = font.render(text, 0, pygame.Color(13, 211, 214))
+    textLocation = pygame.Rect(0, 0, WIDTH, HEIGHT).move(WIDTH / 2 - textObject.get_width() / 2,
+                                                         HEIGHT / 2 - textObject.get_height() / 2)
+    win.blit(textObject, textLocation)
+
+
+if __name__ == '__main__':
+    main()
