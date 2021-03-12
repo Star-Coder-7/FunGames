@@ -3,7 +3,7 @@ The main game / the driver file.
 """
 
 import pygame
-import engine
+import engine, chess_AI
 
 pygame.init()
 pygame.font.init()
@@ -46,14 +46,18 @@ def main():
     sqSelected = ()  # for the last square the user clicked
     playerClicks = []  # keeps track of player clicks
 
+    playerOne = False   # True if human is playing white, otherwise it's False because AI goes first.
+    playerTwo = False  # same as above but vice versa
+
     run = True
     while run:
+        humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if not gameOver:
+                if not gameOver and humanTurn:
                     location = pygame.mouse.get_pos()
                     col = location[0] // SQ_SIZE
                     row = location[1] // SQ_SIZE
@@ -93,6 +97,13 @@ def main():
                     moveMade = False
                     animate = False
 
+        # AI move finder
+        if not gameOver and not humanTurn:
+            AImove = chess_AI.findRandomMove(validMoves)
+            gs.makeMove(AImove)
+            moveMade = True
+            animate = True
+
         if moveMade:
             if animate:
                 animateMove(gs.moveLog[-1], win, gs.board, clock)
@@ -110,7 +121,7 @@ def main():
                 drawText(win, "CONGRATULATIONS WHITE!!!\nYou won by a checkmate.")
         elif gs.stalemate:
             gameOver = True
-            drawText(win, "STALEMATE!!!\nSorry, but the game has been tied due to a stalemate,")
+            drawText(win, "STALEMATE!!!\nGame has ended due to a stalemate.")
 
         clock.tick(MAX_FPS)
         pygame.display.flip()

@@ -13,13 +13,11 @@ import pygame
 from tkinter import *
 from tkinter import messagebox
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-import grid_module
 from grid_module import colorPallet
 from grid_module import pixelArt
 from grid_module import Menu
 from grid_module import Grid
 import sys
-import time
 
 sys.setrecursionlimit(1000000)
 

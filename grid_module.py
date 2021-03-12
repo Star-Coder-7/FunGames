@@ -6,6 +6,8 @@
 # populate the grid, therefore they are dependant of pixel.
 # ------------------------------------------------------
 # Class Descriptions are given above each class.
+
+
 import pygame
 
 pygame.init()
@@ -15,6 +17,7 @@ pygame.init()
 # columns, bases upon those arguments it will automatically alter the pixel size. To display the grid simply call
 # ____.drawGrid(). To find the item in the grid that was clicked on call ____.clicked().
 class Grid(object):
+
     def __init__(self, win, width, height, cols, rows, showGrid=False, startx=0, starty=0, bg=(255, 255, 255)):
         self.width = width
         self.height = height
@@ -34,8 +37,8 @@ class Grid(object):
     def getGrid(self):
         return self.grid  # Return the grid list
 
-    def drawGrid(self, lineColor=(0, 0, 0)):  # This will draw the lines to create the grid, this is done so by
-                                              # simply creating overlapping boxes
+    def drawGrid(self, lineColor=(0, 0, 0)):  # This will draw the lines to create the grid, this is done so by simply
+                                              # creating overlapping boxes
         x = self.startx
         y = self.starty
 
@@ -58,8 +61,8 @@ class Grid(object):
 
             return self.grid[g1][g2]
 
-        except IndexError:  # If we run into an index error that means that the user did not click on a position in
-                            # the grid
+        except IndexError:  # If we run into an index error that means that the user did not click on a position in the
+                            # grid
             return False
 
     def isSelected(self):  # Return the currently selected object
@@ -72,6 +75,7 @@ class Grid(object):
 # has its own specific clearGrid(). Using ____.clearGrid() will simply set the color
 # to the original background color.
 class pixelArt(Grid):
+
     def drawGrid(self):
         self.grid = []
         # Create pixels in the grid
@@ -79,7 +83,7 @@ class pixelArt(Grid):
             self.grid.append([])
             for j in range(self.rows):
                 self.grid[i].append(
-                    pixel(i, j, self.width, self.height, self.cols, self.rows, self.startx, self.starty, self.showGrid))
+                    Pixel(i, j, self.width, self.height, self.cols, self.rows, self.startx, self.starty, self.showGrid))
                 self.grid[i][j].show(self.screen, (255, 255, 255), self.lineThick)
                 if self.showGrid:
                     self.grid[i][j].show(self.screen, (0, 0, 0), 1, False, True)
@@ -94,8 +98,7 @@ class pixelArt(Grid):
     def clearGrid(self):  # This will set all of the pixels to the same color as the background color
         for pixels in self.grid:
             for p in pixels:
-                if self.showGrid:  # If the grid is to be showing we must redraw the pixels so that we can see the
-                                   # grid after we change their color
+                if self.showGrid:  # If the grid is to be showing we must redraw the pixels so that we can see the grid after we change their color
                     p.show(self.screen, self.bg, 0)
                     p.show(self.screen, (0, 0, 0), 1)
                 else:
@@ -106,9 +109,9 @@ class pixelArt(Grid):
 # and is a concrete class. The setColor() method simply takes a list of colors and assigns them to pixels
 # in the grid. This can only be called after the grid has been created.
 class colorPallet(pixelArt):
+
     def setColor(self,
-                 colorList):  # The colorList argument passed to the function must be equal to the number of pixels
-                              # in the grid
+                 colorList):  # The colorList argument passed to the function must be equal to the number of pixels in the grid
         colourCount = 0
 
         for pixels in self.getGrid():
@@ -121,6 +124,7 @@ class colorPallet(pixelArt):
 # It uses all of the methods from the parent grid class and is a concrete class
 # The setText method takes a list of strings and displays them in the grid.
 class Menu(Grid):
+
     def setText(self, textList):  # The textList argument passed must be equal to the number of spots in the grid
 
         self.grid = []
@@ -140,7 +144,8 @@ class Menu(Grid):
 
 # This class is responsible for displaying text and these objects are added into the grid.
 # The showText() method will display the text while the show() method will draw a square showing thr grid.
-class textObject():
+class textObject:
+
     def __init__(self, i, j, width, height, cols, rows, startx=0, starty=0):
         self.col = i  # The column of the current instance in the grid
         self.row = j  # The row of the current instance in the grid
@@ -154,18 +159,19 @@ class textObject():
 
     def showText(self, win, txt):  # This will render and draw the text on the screen
         self.text = txt
-        myFont = pygame.font.SysFont('comicsans', 15)
+        myFont = pygame.font.SysFont('comicsansms', 15)
         text = myFont.render(self.text, 1, (0, 0, 0))
         win.blit(text, (self.x + (self.w / 2 - text.get_width() / 2), self.y + (
-                    self.h / 2 - text.get_height() / 2)))  # This will make sure the text is center in the screen.
+                self.h / 2 - text.get_height() / 2)))  # This will make sure the text is center in the screen.
 
     def show(self, screen, color, st, outline=False):  # Draws a square displaying the area in the grid
         pygame.draw.rect(screen, color, (self.x, self.y, self.w, self.h), st)
 
 
-# This pixel object is responsible for stroing a color and displaying it to the screen. These objects are added into
-# the grid. The methods are named according to what they do.
-class pixel():
+# This pixel object is responsible for stroing a color and displaying it to the screen. These objects are added into the
+# grid. The methods are named according to what they do.
+class Pixel:
+
     def __init__(self, i, j, width, height, cols, rows, startx=0, starty=0, showGrid=False):
         self.col = i  # The column of the current instance
         self.row = j  # The row of the current instance
@@ -180,19 +186,19 @@ class pixel():
         self.neighbors = []
 
     def show(self, screen, color, st, outline=False, first=False):  # Display the current pixel
-        if not first:
+        if not (first):
             self.color = color
 
         pygame.draw.rect(screen, color, (self.x, self.y, self.w, self.h), st)
-        if self.showGrid and not outline:
+        if self.showGrid and not (outline):
             pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.w, self.h), 1)
 
     def getPos(self):
-        return self.col * self.w, self.row * self.h  # Return a tuple (x,y) of the top left co-ords of the pixel
+        return (self.col * self.w, self.row * self.h)  # Return a tuple (x,y) of the top left co-ords of the pixel
 
     def click(self, screen,
-              color):  # If the pixel has been clicked on call this and it will display the new color and set the
-                       # color attribute for that pixel
+              color):  # If the pixel has been clicked on call this and it will display the new color and set the color
+                       # attribute for that pixel
         self.show(screen, color, 0)
         self.color = color
 
