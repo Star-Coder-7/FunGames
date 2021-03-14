@@ -3,7 +3,8 @@ The main game / the driver file.
 """
 
 import pygame
-import engine, chess_AI
+import engine
+import chess_AI
 
 pygame.init()
 pygame.font.init()
@@ -42,9 +43,10 @@ def main():
 
     moveMade = False  # Keeps track of player clicks
     animate = False   # Flag variable for when to animate
+    playerClicks = []  # keeps track of player clicks
+
     loadImages()  # Only done once every run
     sqSelected = ()  # for the last square the user clicked
-    playerClicks = []  # keeps track of player clicks
 
     playerOne = False   # True if human is playing white, otherwise it's False because AI goes first.
     playerTwo = False  # same as above but vice versa
@@ -89,6 +91,7 @@ def main():
                     gs.undoMove()
                     moveMade = True
                     animate = False
+                    gameOver = False
                 elif event.key == pygame.K_r or event.key == pygame.K_x:
                     gs = engine.GameState()
                     validMoves = gs.getValidMoves()
@@ -96,10 +99,13 @@ def main():
                     playerClicks = []
                     moveMade = False
                     animate = False
+                    gameOver = False
 
         # AI move finder
         if not gameOver and not humanTurn:
-            AImove = chess_AI.findRandomMove(validMoves)
+            AImove = chess_AI.findBestMoveMinMax(gs, validMoves)
+            if AImove is None:
+                AImove = chess_AI.findRandomMove(validMoves)
             gs.makeMove(AImove)
             moveMade = True
             animate = True
