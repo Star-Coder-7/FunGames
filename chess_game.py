@@ -49,7 +49,7 @@ def main():
     sqSelected = ()  # for the last square the user clicked
 
     playerOne = False   # True if human is playing white, otherwise it's False because AI goes first.
-    playerTwo = False  # same as above but vice versa
+    playerTwo = True  # same as above but vice versa
 
     run = True
     while run:
@@ -103,7 +103,7 @@ def main():
 
         # AI move finder
         if not gameOver and not humanTurn:
-            AImove = chess_AI.findBestMoveMinMax(gs, validMoves)
+            AImove = chess_AI.findBestMinMaxMove(gs, validMoves)
             if AImove is None:
                 AImove = chess_AI.findRandomMove(validMoves)
             gs.makeMove(AImove)
@@ -130,7 +130,7 @@ def main():
             drawText(win, "STALEMATE!!!\nGame has ended due to a stalemate.")
 
         clock.tick(MAX_FPS)
-        pygame.display.flip()
+        pygame.display.update()
 
 
 def drawGameState(win, gs, validMoves, sqSelected):
@@ -203,7 +203,7 @@ def animateMove(move, win, board, clock):
             win.blit(IMAGES[move.pieceCaptured], endSquare)
         # draw the moving piece
         win.blit(IMAGES[move.pieceMoved], pygame.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
-        pygame.display.flip()
+        pygame.display.update()
         clock.tick(60)
 
 

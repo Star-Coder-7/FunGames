@@ -259,10 +259,10 @@ def mainRun():
     pygame.display.set_caption("Sudoku Gui")
     board = Grid(9, 9, 540, 540, win)
     key = None
-    run = True
     start = time.time()
     strikes = 0
 
+    run = True
     while run:
         play = round(time.time() - start)
 
@@ -330,6 +330,9 @@ def mainRun():
 
                         if board.isFinished():
                             print("Game over")
+
+                if event.key == pygame.K_q:
+                    run = False
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()

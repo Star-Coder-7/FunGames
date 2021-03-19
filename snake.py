@@ -3,8 +3,7 @@ import random
 
 pygame.init()
 
-width = 500
-height = 500
+width = height = 500
 
 cols = 25
 rows = 20

@@ -13,7 +13,7 @@ pygame.font.init()
 sWidth = 800
 sHeight = 700
 playWidth = 300  # meaning 300 // 10 = 30 width per block
-playHeight = 600  # meaning 600 // 20 = 20 height per blo ck
+playHeight = 600  # meaning 600 // 20 = 20 height per block
 block_size = 30
 
 topLeft_x = (sWidth - playWidth) // 2
@@ -273,7 +273,7 @@ def drawWindow(surface):
     # pygame.display.update()
 
 
-def main():
+def mainMenu():
     global grid
 
     locked_positions = {}  # (x,y):(255,0,0)
@@ -380,7 +380,7 @@ def main():
     pygame.time.delay(2000)
 
 
-def mainMenu():
+def main():
     run = True
     while run:
         win.fill((0,0,0))
@@ -392,12 +392,12 @@ def mainMenu():
                 run = False
 
             if event.type == pygame.KEYDOWN:
-                main()
+                mainMenu()
 
     pygame.quit()
 
 
 win = pygame.display.set_mode((sWidth, sHeight))
-pygame.display.set_caption('Tetris')
+pygame.display.set_caption('TETRIS')
 
-mainMenu()  # start game
+main()  # start game

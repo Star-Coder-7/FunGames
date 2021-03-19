@@ -49,9 +49,10 @@ Helper method to make first recursive call
 '''
 
 
-def findBestMoveMinMax(gs, validMoves):
+def findBestMinMaxMove(gs, validMoves):
     global nextMove
     nextMove = None
+    random.shuffle(validMoves)
     findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
     return nextMove
 
@@ -104,7 +105,6 @@ def scoreBoard(gs):
                 score += pieceScore[square[1]]
             elif square[0] == 'b':
                 score -= pieceScore[square[1]]
-
     return score
 
 
