@@ -3,6 +3,8 @@ import pygame
 import sys
 import math
 
+pygame.init()
+
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -11,6 +13,8 @@ WHITE = (255, 255, 255)
 
 ROW_COUNT = 6
 COL_COUNT = 7
+SQ_SIZE = 100
+RADIUS = int(SQ_SIZE / 2 - 5)
 
 
 def createBoard():
@@ -84,32 +88,22 @@ def drawBoard(board):
     pygame.display.update()
 
 
-board = createBoard()
-printBoard(board)
-gameOver = False
-turn = 0
-
-pygame.init()
-
-SQ_SIZE = 100
-
 width = COL_COUNT * SQ_SIZE
 height = (ROW_COUNT + 1) * SQ_SIZE
-
 size = (width, height)
-
-RADIUS = int(SQ_SIZE / 2 - 5)
 
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption('Connect 4')
+board = createBoard()
+printBoard(board)
 drawBoard(board)
 pygame.display.update()
 
 myfont = pygame.font.SysFont("monospace", 75)
-
+gameOver = False
+turn = 0
 
 while not gameOver:
-
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -167,4 +161,6 @@ while not gameOver:
             turn %= 2
 
             if gameOver:
-                pygame.time.wait(3000)
+                pygame.time.wait(5000)  # milliseconds
+
+pygame.quit()
