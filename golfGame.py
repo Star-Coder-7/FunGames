@@ -2,19 +2,20 @@ import pygame
 import physics
 import math
 import courses
-import start_screen
+import startScreen
 from time import sleep
 import tkinter as tk
 from tkinter import messagebox
 import os
 
+# INITIALIZATION
 pygame.init()
 
 SOUND = False
 
 winWidth = 1080
 winHeight = 600
-pygame.display.set_caption('Super Minigolf')
+pygame.display.set_caption('SUPER MINIGOLF')
 
 # LOAD IMAGES
 icon = pygame.image.load(os.path.join('img', 'icon.ico'))
@@ -74,8 +75,8 @@ hazard = False
 stickyPower = False
 mullagain = False
 superPower = False
-powerUpButtons = [[900, 35, 20, 'P', (255, 69, 0)], [1000, 35, 20, 'S', (255, 0, 255)], [950, 35, 20, 'M',
-                                                                                         (105, 105, 105)]]
+powerUpButtons = [[900, 35, 20, 'P', (255, 69, 0)], [1000, 35, 20, 'S', (255, 0, 255)],
+                  [950, 35, 20, 'M', (105, 105, 105)]]
 
 # FONTS
 myFont = pygame.font.SysFont('comicsans', 50)
@@ -84,7 +85,7 @@ parFont = pygame.font.SysFont('comicsans', 30)
 win = pygame.display.set_mode((winWidth, winHeight))
 
 
-class scoreSheet:
+class ScoreSheet:
 
     def __init__(self, parr):
         self.parList = parr
@@ -94,8 +95,8 @@ class scoreSheet:
         self.parScore = 0
         self.strokes = []
         self.win = win
-        self.winwidth = winWidth
-        self.winheight = winHeight
+        self.winWidth = winWidth
+        self.winHeight = winHeight
         self.width = 400
         self.height = 510
         self.font = pygame.font.SysFont('comicsans', 22)
@@ -132,8 +133,8 @@ class scoreSheet:
         textt = self.bigFont.render(str(scorePar), 1, color)
         win.blit(textt, (805 + text.get_width(), 275))
 
-        startx = self.winwidth / 2 - self.width / 2
-        starty = self.winheight / 2 - self.height / 2
+        startx = self.winWidth / 2 - self.width / 2
+        starty = self.winHeight / 2 - self.height / 2
         pygame.draw.rect(self.win, grey, (startx, starty, self.width, self.height))
 
         # Set up grid
@@ -141,7 +142,6 @@ class scoreSheet:
             # Column Lines
             pygame.draw.line(self.win, (0, 0, 0), (startx + (i * (self.width / 3)), starty),
                              (startx + (i * (self.width / 3)), starty + self.height), 2)
-
         for i in range(1, 11):
             # Rows
             if i == 1:  # Display all headers for rows
@@ -151,7 +151,7 @@ class scoreSheet:
                 self.win.blit(blit, (startx + 184, starty + 10))
                 blit = self.font.render('Stroke', 2, (0, 0, 0))
                 self.win.blit(blit, (startx + 295, starty + 10))
-                blit = self.font.render('Press the mouse to continue', 1, (128, 128, 128))
+                blit = self.font.render('Press the mouse to continue...', 1, (128, 128, 128))
                 self.win.blit(blit, (384, 565))
             else:  # Populate rows accordingly
                 blit = self.font.render(str(i - 1), 1, (128, 128, 128))
@@ -182,10 +182,11 @@ def error():
     if SOUND:
         wrong.play()
     root = tk.Tk()
+    root.title('Error Window')
     root.attributes("-topmost", True)
     root.withdraw()
-    messagebox.showerror('Out of Powerups!', 'You have no powerups left for this course, press the mouse to continue')
-
+    messagebox.showerror('Out of Powerups!',
+                         'You have no more powerups remaining for this course, press ok to continue...')
     try:
         root.destroy()
     except:
@@ -257,29 +258,30 @@ def endScreen():  # Display this screen when the user completes trhe course
             if event.type == pygame.MOUSEBUTTONDOWN:
                 loop = False
                 break
+
     level = 1
     setup(level)
     list = courses.getPar(1)
     par = list[level - 1]
-    sheet = scoreSheet(list)
+    sheet = ScoreSheet(list)
     starting = True
     hover = False
     while starting:
         pygame.time.delay(10)
-        start_screen.mainScreen(hover)
+        startScreen.mainScreen(hover)
         for event in pygame.event.get():
             if event.type == pygame.MOUSEMOTION:
                 pos = pygame.mouse.get_pos()
-                hover = start_screen.shopClick(pos)
-                course = start_screen.click(pos)
-                start_screen.mouseOver(course is not None)
+                hover = startScreen.shopClick(pos)
+                course = startScreen.click(pos)
+                startScreen.mouseOver(course is not None)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
-                if start_screen.click(pos) is not None:
+                if startScreen.click(pos) is not None:
                     starting = False
                     break
-                if start_screen.shopClick(pos) is True:
-                    surface = start_screen.drawShop()
+                if startScreen.shopClick(pos) is True:
+                    surface = startScreen.drawShop()
                     win.blit(surface, (0, 0))
                     pygame.display.update()
                     shop = True
@@ -293,7 +295,7 @@ def endScreen():  # Display this screen when the user completes trhe course
                                 if 10 < pos[0] < 100 and pos[1] > 560:
                                     shop = False
                                     break
-                                surface = start_screen.drawShop(pos, True)
+                                surface = startScreen.drawShop(pos, True)
                                 win.blit(surface, (0, 0))
                                 pygame.display.update()
 
@@ -308,7 +310,6 @@ def setup(level):  # Setup objects for the level from module courses
     stickyPower = False
     superPower = False
     mullagain = False
-
     if level >= 10:
         endScreen()  # Completed the course
     else:
@@ -360,7 +361,7 @@ def showScore():  # Display the score from class scoreSheet
                 setup(level)
 
 
-def holeInOne():  # If player gets a hole in one display special mesage to screen
+def holeInOne():  # If player gets a hole in one display special message to screen
     text = myFont.render('Hole in One!', 1, (255, 255, 255))
     x = (winWidth / 2) - (text.get_width() / 2)
     y = (winHeight / 2) - (text.get_height() / 2)
@@ -485,8 +486,8 @@ def powerBar(moving=False, angle=0):
     if moving:
         # Move the arm on the power meter if we've locked the angle
         redrawWindow(ballStationary, line, False, False)
-        pygame.draw.line(win, (255, 255, 255), (80, winHeight - 7), (int(80 + round(math.cos(angle) * 60)),
-                                                                     int((winHeight - (math.sin(angle) * 60)))), 3)
+        pygame.draw.line(win, (255, 255, 255), (80, winHeight - 7),
+                         (int(80 + round(math.cos(angle) * 60)), int((winHeight - (math.sin(angle) * 60)))), 3)
     pygame.display.update()
 
 
@@ -534,7 +535,7 @@ def overHole(x, y):  # Determine if we are over top of the hole
 
 list = courses.getPar(1)
 par = list[level - 1]
-sheet = scoreSheet(list)
+sheet = ScoreSheet(list)
 
 pos = courses.getStart(level, 1)
 ballStationary = pos
@@ -550,25 +551,24 @@ setup(1)
 
 # Start loop
 # Display start screen
-
 hover = False
 starting = True
 while starting:
     pygame.time.delay(10)
-    start_screen.mainScreen(hover)
+    startScreen.mainScreen(hover)
     for event in pygame.event.get():
         if event.type == pygame.MOUSEMOTION:
             pos = pygame.mouse.get_pos()
-            hover = start_screen.shopClick(pos)
-            course = start_screen.click(pos)
-            start_screen.mouseOver(course is not None)
+            hover = startScreen.shopClick(pos)
+            course = startScreen.click(pos)
+            startScreen.mouseOver(course is not None)
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            if start_screen.click(pos) is not None:
+            if startScreen.click(pos) is not None:
                 starting = False
                 break
-            if start_screen.shopClick(pos) is True:
-                surface = start_screen.drawShop()
+            if startScreen.shopClick(pos) is True:
+                surface = startScreen.drawShop()
                 win.blit(surface, (0, 0))
                 pygame.display.update()
                 shop = True
@@ -582,7 +582,7 @@ while starting:
                             if 10 < pos[0] < 100 and pos[1] > 560:
                                 shop = False
                                 break
-                            surface = start_screen.drawShop(pos, True)
+                            surface = startScreen.drawShop(pos, True)
                             win.blit(surface, (0, 0))
                             pygame.display.update()
 
@@ -593,7 +593,7 @@ while starting:
 # Game Loop for levels and collision
 while True:
     if stickyPower is False and superPower is False:
-        ballColor = start_screen.getBallColor()
+        ballColor = startScreen.getBallColor()
         if ballColor is None:
             ballColor = (255, 255, 255)
     for event in pygame.event.get():
@@ -610,7 +610,6 @@ while True:
                     displayScore(strokes, par)
 
                 strokes = 0
-
         if event.type == pygame.MOUSEMOTION:
             pos = pygame.mouse.get_pos()
             for x in powerUpButtons:
@@ -645,8 +644,9 @@ while True:
                             stickyPower = True
                             powerUps -= 1
                             ballColor = (255, 0, 255)
-                    elif x[3] == 'M':  # Mullagain, allows you to retry your sot from your previous position, will
-                        # remove strokes u had on last shot
+                    elif x[
+                        3] == 'M':  # Mullagain, allows you to retry your sot from your previous position, will remove
+                                    # strokes u had on last shot
                         if mullagain is False and powerUps > 0 and strokes >= 1:
                             mullagain = True
                             powerUps -= 1
@@ -680,7 +680,7 @@ while True:
                         powerBar(True, powerAngle)
                         loopTime = 0
                         if powerAngle < 0 or powerAngle > math.pi:
-                            neg *= -1
+                            neg = neg * -1
                     else:
                         redrawWindow(ballStationary, line, False, False)
 
@@ -704,7 +704,6 @@ while True:
                                     power = (math.pi - powerAngle) * 30
                                 else:
                                     power = (math.pi - powerAngle) * 40
-
                             shootPos = ballStationary
                             powerLock = True
                             break
@@ -757,6 +756,7 @@ while True:
             # We have got the ball in the hole
             if SOUND:
                 inHole.play()
+
             while True:  # Move ball so it looks like it goes into the hole (increase y value)
                 pygame.time.delay(20)
                 redrawWindow(ballStationary, None, True)
@@ -825,7 +825,7 @@ while True:
                         shoot = False
                         strokes += 1
 
-                        label = myFont.render('Laser Hazard, +1 penalty stroke', 1, (255, 255, 255))
+                        label = myFont.render('Laser Hazard, +1 stroke', 1, (255, 255, 255))
                         win.blit(label, (winWidth / 2 - label.get_width() / 2, winHeight / 2 - label.get_height() / 2))
                         pygame.display.update()
                         pygame.time.delay(1000)
@@ -851,7 +851,7 @@ while True:
                         shoot = False
                         strokes += 1
 
-                        label = myFont.render('Water Hazard, +1 penalty stroke', 1, (255, 255, 255))
+                        label = myFont.render('Water Hazard, +1 stroke', 1, (255, 255, 255))
                         if SOUND:
                             splash.play()
                         win.blit(label, (winWidth / 2 - label.get_width() / 2, winHeight / 2 - label.get_height() / 2))
@@ -956,8 +956,8 @@ while True:
 
                     elif i[1] + i[3] > ballCords[1] > i[1] and i[0] + i[2] - 16 < ballCords[0] < i[0] + i[2]:
                         hitting = False
-                        power = physics.findPower(power, angle, time)
 
+                        power = physics.findPower(power, angle, time)
                         if angle < math.pi:
                             if not (time > maxT):
                                 angle = physics.findAngle(power, angle)
@@ -990,10 +990,10 @@ while True:
                                     power = 0
                                     break
 
-                    elif i[1] + i[3] < ballCords[1] < i[1] + i[3] + 10 and ballCords[0] + 2 > i[0] and ballCords[0] < \
-                        i[0] + i[2] + 2:
+                    elif i[1] + i[3] < ballCords[1] < i[1] + i[3] + 10 and ballCords[0] + 2 > i[0] and \
+                        ballCords[0] < i[0] + i[2] + 2:
                         power = physics.findPower(power, angle, time)
-                        if not hitting:
+                        if not (hitting):
                             hitting = True
                             if angle > math.pi / 2:
                                 x = physics.findAngle(power, angle)

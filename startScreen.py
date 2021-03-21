@@ -11,22 +11,23 @@ back = pygame.image.load(os.path.join('img', 'back.png'))
 course = pygame.image.load(os.path.join('img', 'course1.png'))
 course1 = pygame.transform.scale(course, (200, 200))
 
-font = pygame.font.SysFont('comicsans', 24)
+font = pygame.font.SysFont('comicsansms', 24)
 
-buttons = [[1080/2 - course1.get_width()/2, 260, course1.get_width(), course1.get_height(), 'Grassy Land']]
+buttons = [[1080 / 2 - course1.get_width() / 2, 260, course1.get_width(), course1.get_height(), 'Grassy Land']]
 shopButton = []
 ballObjects = []
 surfaces = []
 
 
-class Ball():
+class Ball:
+
     def __init__(self, color, locked, org):
         self.color = color
         self.locked = locked
         self.original = org
         self.price = 10
         self.equipped = False
-        self.font = pygame.font.SysFont('comicsans', 22)
+        self.font = pygame.font.SysFont('comicsansms', 22)
 
     def unlock(self):
         file = open('scores.txt', 'r')
@@ -54,17 +55,17 @@ class Ball():
     def getSurf(self, hover=False):
         surf = pygame.Surface((160, 125), pygame.SRCALPHA, 32)
         surf = surf.convert_alpha()
-        # surf.fill((255,255,255))
-        pygame.draw.circle(surf, (0,0,0), (round(surf.get_width() / 2), 25), 22)
+        # surf.fill((255, 255, 255))
+        pygame.draw.circle(surf, (0, 0, 0), (round(surf.get_width() / 2), 25), 22)
         pygame.draw.circle(surf, self.color, (round(surf.get_width() / 2), 25), 20)
         if self.locked is True:
             label = self.font.render('Price: 10', 1, (0, 0, 0))
             if hover:
                 buy = self.font.render('Purchase?', 1, (64, 64, 64))
             else:
-                buy = self.font.render('Purchase?', 1, (0, 0 ,0))
-            surf.blit(label, (round(surf.get_width() / 2 - label.get_width()/2), 50))
-            surf.blit(buy, (round(surf.get_width() / 2 - label.get_width()/2), 80))
+                buy = self.font.render('Purchase?', 1, (0, 0, 0))
+            surf.blit(label, (round(surf.get_width() / 2 - label.get_width() / 2), 50))
+            surf.blit(buy, (round(surf.get_width() / 2 - label.get_width() / 2), 80))
         else:
             label = self.font.render('Unlocked', 1, (0, 0, 0))
             if self.equipped is False:
@@ -73,7 +74,7 @@ class Ball():
             else:
                 buy = self.font.render('Equipped', 1, (0, 0, 0))
                 surf.blit(buy, (round(surf.get_width() / 2 - buy.get_width() / 2), 80))
-            surf.blit(label, (round(surf.get_width() / 2 - label.get_width()/2), 50))
+            surf.blit(label, (round(surf.get_width() / 2 - label.get_width() / 2), 50))
 
         pygame.display.update()
 
@@ -87,8 +88,8 @@ def getBest():
         if l[0] == 'score':
             file.close()
             return l[1].strip()
-    file.close()
     return 0
+    file.close()
 
 
 def getCoins():
@@ -114,8 +115,8 @@ def drawShop(pos=None, click=False):
                         root.attributes("-topmost", True)
                         root.withdraw()
                         if ballObjects[c].locked is True:
-                            if messagebox.askyesno('Confirm Purchase?', 'Are you sure you would like to purchase this '
-                                                                        'new ball for 10 coins?'):
+                            if messagebox.askyesno('Confirm Purchase?',
+                                                   'Are you sure you want to purchase this new ball for 10 coins?'):
                                 if int(getCoins()) >= 10:
                                     ballObjects[c].unlock()
                                     oldCoins = int(getCoins())
@@ -126,13 +127,13 @@ def drawShop(pos=None, click=False):
                                     for line in f:
                                         l = line.split()
                                         if l[0] == 'coins':
-                                            file.write('coins ' + str(oldCoins - 10)+ '\n')
+                                            file.write('coins ' + str(oldCoins - 10) + '\n')
                                         else:
                                             file.write(line)
                                     file.close()
                                 else:
-                                    messagebox.showerror('Not enough coins!', 'You do not have enough coins to '
-                                                                              'purchase this item!')
+                                    messagebox.showerror('Not enough coins!',
+                                                         'You do not have enough coins to purchase this item!')
 
                                 try:
                                     root.destroy()
@@ -147,13 +148,13 @@ def drawShop(pos=None, click=False):
 
                             ballObjects[c].equip()
                             ballObjects[c].equipped = True
-            c = c + 1
+            c += 1
 
     surf = pygame.Surface((1080, 600))
-    surf.blit(back,(0,0))
-    backButton = font.render('<-- Back', 1, (135,206,250))
+    surf.blit(back, (0, 0))
+    backButton = font.render('<-- Back', 1, (135, 206, 250))
     surf.blit(backButton, (10, 560))
-    text = font.render('Coins: ' + getCoins(), 1, (51,51,153))
+    text = font.render('Coins: ' + getCoins(), 1, (51, 51, 153))
     surf.blit(text, (10, 10))
     count = 0
     c = 0
@@ -188,7 +189,6 @@ def drawShop(pos=None, click=False):
                 xVal = xVal + 1
                 count = 0
             c = c + 1
-
     file.close()
 
     pygame.display.update()
@@ -208,11 +208,11 @@ def mainScreen(hover=False):
     surf = pygame.Surface((1080, 600))
     w = title.get_width()
     h = title.get_height()
-    surf.blit(back, (0,0))
-    surf.blit(title, ((1080/2 - (w/2)), 50))
+    surf.blit(back, (0, 0))
+    surf.blit(title, ((1080 / 2 - (w / 2)), 50))
     # For Shop Button
     if hover is True:
-        text = font.render('Ball Shop', 1,(0, 0, 0))
+        text = font.render('Ball Shop', 1, (0, 0, 0))
     else:
         text = font.render('Ball Shop', 1, (51, 51, 153))
     surf.blit(text, (960, 12))
@@ -222,14 +222,14 @@ def mainScreen(hover=False):
     # For course Button
     i = buttons[0]
     surf.blit(course1, (i[0], i[1]))
-    text = font.render(i[4], 1, (51,51,153))
-    surf.blit(text, (i[0] + ((i[3] - text.get_width())/2), i[1] + i[3] + 10))
+    text = font.render(i[4], 1, (51, 51, 153))
+    surf.blit(text, (i[0] + ((i[3] - text.get_width()) / 2), i[1] + i[3] + 10))
     text = font.render('Best: ' + getBest(), 1, (51, 51, 153))
-    surf.blit(text, (i[0] + ((i[3] - text.get_width())/2), i[1] + i[3] + 40))
-    text = font.render('Coins: ' + getCoins(), 1, (51,51,153))
+    surf.blit(text, (i[0] + ((i[3] - text.get_width()) / 2), i[1] + i[3] + 40))
+    text = font.render('Coins: ' + getCoins(), 1, (51, 51, 153))
     surf.blit(text, (10, 10))
 
-    win.blit(surf, (0,0))
+    win.blit(surf, (0, 0))
     pygame.display.update()
 
 
@@ -266,5 +266,3 @@ def click(pos):
                 return i[4]
                 break
     return None
-
-

@@ -17,6 +17,17 @@ class Board:
             for col in range(row % 2, COLS, 2):
                 pygame.draw.rect(win, RED, (row * SQ_SIZE, col * SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
+    def evaluate(self):
+        return self.purpleLeft - self.blueLeft + (self.purpleKings * 0.5 - self.blueKings * 0.5)
+
+    def getAllPieces(self, color):
+        pieces = []
+        for row in self.board:
+            for piece in row:
+                if piece != 0 and piece.color == color:
+                    pieces.append(piece)
+        return pieces
+
     def move(self, piece, row, col):
         self.board[piece.row][piece.col], self.board[row][col] = self.board[row][col], self.board[piece.row][piece.col]
         piece.move(row, col)

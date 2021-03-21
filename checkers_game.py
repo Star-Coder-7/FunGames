@@ -65,3 +65,10 @@ class Game:
             self.turn = PURPLE
         else:
             self.turn = BLUE
+
+    def getBoard(self):
+        return self.board
+
+    def aiMove(self, board):
+        self.board = board
+        self.changeTurn()

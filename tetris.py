@@ -256,7 +256,7 @@ def drawNextShape(shape, surface):
 
 
 def drawWindow(surface):
-    surface.fill((0,0,0))
+    surface.fill((0, 0, 0))
     # Tetris Title
     font = pygame.font.SysFont('comicsans', 60)
     label = font.render('TETRIS', 1, (255,255,255))
@@ -276,39 +276,39 @@ def drawWindow(surface):
 def mainMenu():
     global grid
 
-    locked_positions = {}  # (x,y):(255,0,0)
-    grid = createGrid(locked_positions)
+    lockedPositions = {}  # (x,y):(255,0,0)
+    grid = createGrid(lockedPositions)
 
-    change_piece = False
+    changePiece = False
     run = True
-    current_piece = getShape()
-    next_piece = getShape()
+    currentPiece = getShape()
+    nextPiece = getShape()
     clock = pygame.time.Clock()
     fall_time = 0
     level_time = 0
-    fall_speed = 0.27
+    fallSpeed = 0.27
     score = 0
 
     while run:
 
-        grid = createGrid(locked_positions)
+        grid = createGrid(lockedPositions)
         fall_time += clock.get_rawtime()
         level_time += clock.get_rawtime()
         clock.tick()
 
-        if level_time/1000 > 4:
+        if level_time / 1000 > 4:
             level_time = 0
-            if fall_speed > 0.15:
-                fall_speed -= 0.005
+            if fallSpeed > 0.15:
+                fallSpeed -= 0.005
 
 
         # PIECE FALLING CODE
-        if fall_time / 1000 >= fall_speed:
+        if fall_time / 1000 >= fallSpeed:
             fall_time = 0
-            current_piece.y += 1
-            if not (validSpace(current_piece, grid)) and current_piece.y > 0:
-                current_piece.y -= 1
-                change_piece = True
+            currentPiece.y += 1
+            if not (validSpace(currentPiece, grid)) and currentPiece.y > 0:
+                currentPiece.y -= 1
+                changePiece = True
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -319,60 +319,60 @@ def mainMenu():
             if event.type == pygame.KEYDOWN:
                 # move left
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                    current_piece.x -= 1
-                    if not validSpace(current_piece, grid):
-                        current_piece.x += 1
+                    currentPiece.x -= 1
+                    if not validSpace(currentPiece, grid):
+                        currentPiece.x += 1
 
                 elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     # move right
-                    current_piece.x += 1
-                    if not validSpace(current_piece, grid):
-                        current_piece.x -= 1
+                    currentPiece.x += 1
+                    if not validSpace(currentPiece, grid):
+                        currentPiece.x -= 1
 
                 elif event.key == pygame.K_UP or event.key == pygame.K_w:
                     # rotate shape
-                    current_piece.rotation = current_piece.rotation + 1 % len(current_piece.shape)
-                    if not validSpace(current_piece, grid):
-                        current_piece.rotation = current_piece.rotation - 1 % len(current_piece.shape)
+                    currentPiece.rotation = currentPiece.rotation + 1 % len(currentPiece.shape)
+                    if not validSpace(currentPiece, grid):
+                        currentPiece.rotation = currentPiece.rotation - 1 % len(currentPiece.shape)
 
                 elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     # move shape down
-                    current_piece.y += 1
-                    if not validSpace(current_piece, grid):
-                        current_piece.y -= 1
+                    currentPiece.y += 1
+                    if not validSpace(currentPiece, grid):
+                        currentPiece.y -= 1
 
                 elif event.key == pygame.K_SPACE or event.key == pygame.K_q:
                     run = False
                     pygame.quit()
                     quit()
 
-        shape_pos = convertShapeFormat(current_piece)
+        shape_pos = convertShapeFormat(currentPiece)
 
         # add piece to the grid for drawing
         for i in range(len(shape_pos)):
             x, y = shape_pos[i]
             if y > -1:
-                grid[y][x] = current_piece.color
+                grid[y][x] = currentPiece.color
 
         # IF PIECE HIT GROUND
-        if change_piece:
+        if changePiece:
             for pos in shape_pos:
                 p = (pos[0], pos[1])
-                locked_positions[p] = current_piece.color
-            current_piece = next_piece
-            next_piece = getShape()
-            change_piece = False
+                lockedPositions[p] = currentPiece.color
+            currentPiece = nextPiece
+            nextPiece = getShape()
+            changePiece = False
 
             # call four times to check for multiple clear rows
-            if clearRows(grid, locked_positions):
+            if clearRows(grid, lockedPositions):
                 score += 10
 
         drawWindow(win)
-        drawNextShape(next_piece, win)
+        drawNextShape(nextPiece, win)
         pygame.display.update()
 
         # Check if user lost
-        if checkLost(locked_positions):
+        if checkLost(lockedPositions):
             run = False
 
     drawTextMiddle("You Lost", 40, (255, 255, 255), win)
@@ -383,7 +383,7 @@ def mainMenu():
 def main():
     run = True
     while run:
-        win.fill((0,0,0))
+        win.fill((0, 0, 0))
         drawTextMiddle('Press any key to begin.', 60, (255, 255, 255), win)
         pygame.display.update()
 

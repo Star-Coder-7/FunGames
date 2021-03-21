@@ -1,7 +1,5 @@
-score 0
-coins 13
-0,255,0-True
-0,0,0-True
+score -3
+coins 0
 0,0,255-False
 64,64,64-False
 255,0,0-False
