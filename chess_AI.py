@@ -73,6 +73,7 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
                 if depth == DEPTH:
                     nextMove = move
             gs.undoMove()
+
         return maxScore
 
     else:
@@ -86,6 +87,7 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
                 if depth == DEPTH:
                     nextMove = move
             gs.undoMove()
+
         return minScore
 
 
