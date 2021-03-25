@@ -338,7 +338,7 @@ def dealPlayer(x, y):
     onTable.append([cardBack, x, y])
 
 
-def dealPLayerHit(hit, x, y):
+def dealPlayerHit(hit, x, y):
     endx = x
     endy = y
     movex = 0
@@ -455,4 +455,79 @@ def main():
             pygame.display.update()
 
         else:
+            label = smallFont.render('Press space to hit, tab to stay', 1, (255, 255,255))
+            screen.blit(label, (350, 850))
+            updateScore()
+            pygame.display.update()
+
+            ev = pygame.event.poll()
+            if ev.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if ev.type == pygame.KEYDOWN:
+                if ev.key == pygame.K_q:
+                    pygame.quit()
+                    sys.exit()
+                if ev.key == pygame.K_TAB:
+                    playerStay = True
+                    updateScore(True)
+                if ev.key == pygame.K_SPACE:
+
+                    if allowHit:
+                        hitCard = p.hit()
+                        if len(p.cards) == 3:
+                            dealPlayerHit(cardImage(hitCard[0], hitCard[1]), 325, 650)
+                            drawCard(cardImage(hitCard[0], hitCard[1]), 325, 650)
+                            updateScore()
+                        elif len(p.cards) == 4:
+                            dealPlayerHit(cardImage(hitCard[0], hitCard[1]), 850, 650)
+                            drawCard(cardImage(hitCard[0], hitCard[1]), 850, 650)
+                            updateScore()
+                        elif len(p.cards) == 5:
+                            dealPlayerHit(cardImage(hitCard[0], hitCard[1]), 150, 650)
+                            drawCard(cardImage(hitCard[0], hitCard[1]), 150, 650)
+                            updateScore()
+                        elif len(p.cards) == 6:
+                            dealPlayerHit(cardImage(hitCard[0], hitCard[1]), 1025, 650)
+                            drawCard(cardImage(hitCard[0], hitCard[1]), 1025, 650)
+                            updateScore()
+
+                    allowHit = True
+                    pygame.display.update()
+
+            if p.getScore() > 21:
+                label = myfont.render('You went over 21!', 1, (255, 255, 255))
+                screen.blit(label, (300, 430))
+                allowHit = False
+                updateChips()
+                pygame.display.update()
+                time.sleep(1)
+                pygame.draw.rect(screen, (0,128,0), (0, 640, 1300,200))
+                pygame.draw.rect(screen, (0, 128, 0), (200, 40, 1300, 200))
+                pygame.display.update()
+                break
+
+            elif p.getScore() == 21 and len(p.cards) == 2:
+                allowHit = False
+                playerChips += betChips * 3
+                label = myfont.render('BLACKJACK!', 1, (255, 255, 255))
+                screen.blit(label, (420, 430))
+                updateChips()
+                pygame.display.update()
+                time.sleep(1)
+                pygame.draw.rect(screen, (0, 128, 0), (0, 640, 1300, 200))
+                pygame.draw.rect(screen, (0, 128, 0), (200, 40, 1300, 200))
+                pygame.display.update()
+                break
+
+            elif playerStay:
+                playerTurn = False
+                allowHit = False
+                updateScore()
+                pygame.display.update()
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+        # DEALER
+        if playerTurn is False:
             pass
