@@ -246,10 +246,10 @@ def restart():
 
     while True:
         clock.tick(60)
-        dealplayer(675, 650)
-        dealplayer(500, 650)
-        dealplayer(675, 50)
-        dealplayer(500, 50)
+        dealPlayer(675, 650)
+        dealPlayer(500, 650)
+        dealPlayer(675, 50)
+        dealPlayer(500, 50)
         bet()
         main()
 
@@ -530,4 +530,74 @@ def main():
 
         # DEALER
         if playerTurn is False:
-            pass
+            drawCard(cardImage(dealerCards[1][0], dealerCards[1][1]), 500, 50)
+            try:
+                ind = onTable.index([cardBack, 500, 50])
+                onTable[ind] = [cardImage(dealerCards[1][0], dealerCards[1][1]), 500, 50]
+            except:
+                pass
+
+            updateScore()
+            if len(d.cards) > 2:
+                dealPlayerHit(cardImage(dealerCards[2][0], dealerCards[2][1]), 325, 50)
+                drawCard(cardImage(dealerCards[2][0], dealerCards[2][1]), 325, 50)
+                pygame.display.update()
+                time.sleep(0.3)
+            if len(d.cards) > 3:
+                dealPlayerHit(cardImage(dealerCards[3][0], dealerCards[3][1]), 850, 50)
+                drawCard(cardImage(dealerCards[3][0], dealerCards[3][1]), 850, 50)
+                pygame.display.update()
+                time.sleep(0.3)
+            if len(d.cards) > 4:
+                dealPlayerHit(cardImage(dealerCards[4][0], dealerCards[4][1]), 150, 50)
+                drawCard(cardImage(dealerCards[4][0], dealerCards[4][1]), 150, 50)
+                pygame.display.update()
+                time.sleep(0.3)
+            if len(d.cards) > 5:
+                dealPlayerHit(cardImage(dealerCards[5][0], dealerCards[5][1]), 1025, 50)
+                drawCard(cardImage(dealerCards[5][0], dealerCards[5][1]), 1025, 50)
+                pygame.display.update()
+                time.sleep(0.3)
+
+            updateScore(True)
+
+            if d.getScore() > p.getScore():
+                if d.getScore() < 22:
+                    label = myfont.render('You lost', 1, (255, 255, 255))
+                    screen.blit(label, (510, 430))
+                    updateChips()
+                    pygame.display.update()
+                    break
+                else:
+                    playerChips += betChips * 2
+                    label = myfont.render('Dealer Bust\'s, You Win', 1, (255,255,255))
+                    screen.blit(label, (230, 430))
+                    updateChips()
+                    pygame.display.update()
+                    break
+
+            elif d.getScore() < p.getScore():
+                playerChips += betChips * 2
+                label = myfont.render('Winner!', 1, (255,255,255))
+                screen.blit(label, (475, 430))
+                updateChips()
+                pygame.display.update()
+                break
+            else:
+                playerChips += betChips
+                label = myfont.render('Tie', 1, (255,255,255))
+                screen.blit(label, (600, 450))
+                updateChips()
+                pygame.display.update()
+                break
+        else:
+            drawCard(cardImage(dealerCards[0][0], dealerCards[0][1]), 675, 50)
+            drawCard(cardBack, 500, 50)
+
+    time.sleep(1)
+
+    reset()
+    restart()
+
+
+firstStart()
