@@ -3,6 +3,7 @@ from pygame.locals import *
 import os
 import sys
 import math
+import random
 
 pygame.init()
 
@@ -63,35 +64,71 @@ class Player(object):
                 self.slideCount = 0
                 self.slideUp = False
                 self.runCount = 0
-            win.blit(self.slide[self.slideCount//10], (self.x, self.y))
+            win.blit(self.slide[self.slideCount // 10], (self.x, self.y))
             self.slideCount += 1
 
         else:
             if self.runCount > 42:
                 self.runCount = 0
-            win.blit(self.run[self.runCount//6], (self.x, self.y))
+            win.blit(self.run[self.runCount // 6], (self.x, self.y))
             self.runCount += 1
 
 
 class Saw(object):
+    img = [pygame.image.load(os.path.join('img7', 'SAW0.png')), pygame.image.load(os.path.join('img7', 'SAW1.png')),
+           pygame.image.load(os.path.join('img7', 'SAW2.png')), pygame.image.load(os.path.join('img7', 'SAW3.png'))]
 
     def __init__(self, x, y, width, height):
-        pass
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.hitBox = (x, y, width, height)
+        self.count = 0
+
+    def draw(self, win):
+        self.hitBox = (self.x + 5, self.y + 5, self.width - 10, self.height)
+        if self.count >= 8:
+            self.count = 0
+        win.blit(pygame.transform.scale(self.img[self.count // 2], (64, 64)), (self.x, self.y))
+        self.count += 1
+        pygame.draw.rect(win, (255, 0, 0), self.hitBox, 2)
+
+
+class Spike(Saw):
+    img = pygame.image.load(os.path.join('img7', 'spike.png'))
+
+    def draw(self, win):
+        self.hitBox = (self.x + 10, self.y, 28, 315)
+        win.blit(self.img, (self.x, self.y))
+        pygame.draw.rect(win, (255, 0, 0), self.hitBox, 2)
 
 
 def redrawWindow():
     win.blit(bg, (bgX, 0))
     win.blit(bg, (bgX2, 0))
     runner.draw(win)
+    for x in objects:
+        x.draw(win)
     pygame.display.update()
 
 
 runner = Player(200, 313, 64, 64)
 pygame.time.set_timer(USEREVENT + 1, 500)
+pygame.time.set_timer(USEREVENT + 2, random.randrange(2500, 5000))
 speed = 30
+
+objects = []
+
 run = True
 while run:
     redrawWindow()
+
+    for i in objects:
+        i.x -= 1.4
+        if i.x < i.width * -1:
+            objects.pop(objects.index(i))
+
     bgX -= 1.4
     bgX2 -= 1.4
 
@@ -108,6 +145,13 @@ while run:
         if event.type == USEREVENT + 1:
             speed += 1
 
+        if event.type == USEREVENT + 2:
+            r = random.randrange(0, 2)
+            if r == 0:
+                objects.append(Saw(810, 310, 64, 64))
+            else:
+                objects.append(Spike(810, 0, 48, 320))
+
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_q] or keys[pygame.K_SPACE]:
@@ -122,5 +166,11 @@ while run:
     if keys[pygame.K_DOWN] or keys[pygame.K_s]:
         if not runner.sliding:
             runner.sliding = True
+
+    if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        speed += 1
+
+    if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        speed -= 1
 
     clock.tick(speed)

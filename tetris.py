@@ -13,8 +13,8 @@ pygame.font.init()
 sWidth = 800
 sHeight = 700
 playWidth = 300  # meaning 300 // 10 = 30 width per block
-playHeight = 600  # meaning 600 // 20 = 20 height per block
-block_size = 30
+playHeight = 600  # meaning 600 // 20 = 30 height per block
+blockSize = 30
 
 topLeft_x = (sWidth - playWidth) // 2
 topLeft_y = sHeight - playHeight
@@ -207,7 +207,7 @@ def drawGrid(surface, row, col):
     sx = topLeft_x
     sy = topLeft_y
     for i in range(row):
-        pygame.draw.line(surface, (128,128,128), (sx, sy + i * 30), (sx + playWidth, sy + i * 30))  # horizontal
+        pygame.draw.line(surface, (128, 128, 128), (sx, sy + i * 30), (sx + playWidth, sy + i * 30))  # horizontal
         for j in range(col):
             pygame.draw.line(surface, (128, 128, 128), (sx + j * 30, sy), (sx + j * 30, sy + playHeight))  # vertical
 
@@ -239,7 +239,7 @@ def clearRows(grid, locked):
 
 
 def drawNextShape(shape, surface):
-    font = pygame.font.SysFont('comicsans', 30)
+    font = pygame.font.SysFont('monospace', 30)
     label = font.render('Next Shape', 1, (255, 255, 255))
 
     sx = topLeft_x + playWidth + 50
@@ -259,7 +259,7 @@ def drawWindow(surface):
     surface.fill((0, 0, 0))
     # Tetris Title
     font = pygame.font.SysFont('comicsans', 60)
-    label = font.render('TETRIS', 1, (255,255,255))
+    label = font.render('TETRIS', 1, (255, 255, 255))
 
     surface.blit(label, (topLeft_x + playWidth / 2 - (label.get_width() / 2), 30))
 
@@ -284,27 +284,27 @@ def mainMenu():
     currentPiece = getShape()
     nextPiece = getShape()
     clock = pygame.time.Clock()
-    fall_time = 0
-    level_time = 0
+    fallTime = 0
+    levelTime = 0
     fallSpeed = 0.27
     score = 0
 
     while run:
 
         grid = createGrid(lockedPositions)
-        fall_time += clock.get_rawtime()
-        level_time += clock.get_rawtime()
+        fallTime += clock.get_rawtime()
+        levelTime += clock.get_rawtime()
         clock.tick()
 
-        if level_time / 1000 > 4:
-            level_time = 0
+        if levelTime / 1000 > 4:
+            levelTime = 0
             if fallSpeed > 0.15:
                 fallSpeed -= 0.005
 
 
         # PIECE FALLING CODE
-        if fall_time / 1000 >= fallSpeed:
-            fall_time = 0
+        if fallTime / 1000 >= fallSpeed:
+            fallTime = 0
             currentPiece.y += 1
             if not (validSpace(currentPiece, grid)) and currentPiece.y > 0:
                 currentPiece.y -= 1
