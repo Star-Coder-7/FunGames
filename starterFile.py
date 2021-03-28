@@ -53,6 +53,7 @@ class Player(object):
                 self.jumpCount = 0
                 self.jumping = False
                 self.runCount = 0
+            self.hitBox = (self.x + 4, self.y, self.width - 24, self.height - 10)
         elif self.sliding or self.slideUp:
             if self.slideCount < 20:
                 self.y += 1
@@ -60,11 +61,14 @@ class Player(object):
                 self.y -= 19
                 self.sliding = False
                 self.slideUp = True
+            elif 20 < self.slideCount < 80:
+                self.hitBox = (self.x, self.y + 3, self.width - 8, self.height - 35)
             if self.slideCount >= 110:
                 self.slideCount = 0
                 self.slideUp = False
                 self.runCount = 0
             win.blit(self.slide[self.slideCount // 10], (self.x, self.y))
+            self.hitBox = (self.x + 4, self.y, self.width - 24, self.height - 10)
             self.slideCount += 1
 
         else:
@@ -72,6 +76,7 @@ class Player(object):
                 self.runCount = 0
             win.blit(self.run[self.runCount // 6], (self.x, self.y))
             self.runCount += 1
+            self.hitBox = (self.x + 4, self.y, self.width - 24, self.height - 13)
 
 
 class Saw(object):
