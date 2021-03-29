@@ -1,8 +1,6 @@
 import pygame
 from pygame.locals import *
 import os
-import sys
-import math
 import random
 
 pygame.init()
@@ -172,8 +170,8 @@ def end():
                 run = False
         win.blit(bg, (0, 0))
         largeFont = pygame.font.SysFont('comicsans', 80)
-        prevScore = largeFont.render('Previous Score: ' + str(updateFile()), 1, (0, 0, 255))
-        win.blit(prevScore, (WIDTH / 2 - prevScore.get_width() / 2, 200))
+        bestScore = largeFont.render('Best Score: ' + str(updateFile()), 1, (0, 0, 255))
+        win.blit(bestScore, (WIDTH / 2 - bestScore.get_width() / 2, 200))
         newScore = largeFont.render('Score: ' + str(score), 1, (0, 0, 255))
         win.blit(newScore, (WIDTH / 2 - newScore.get_width() / 2, 320))
         pygame.display.update()
@@ -184,7 +182,7 @@ def end():
 
 runner = Player(200, 313, 64, 64)
 pygame.time.set_timer(USEREVENT + 1, 500)
-pygame.time.set_timer(USEREVENT + 2, random.randrange(2500, 5000))
+pygame.time.set_timer(USEREVENT + 2, random.randrange(3500, 6500))
 
 speed = 30
 pause = 0
