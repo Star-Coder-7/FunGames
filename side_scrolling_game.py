@@ -97,7 +97,7 @@ class Saw(object):
         self.count = 0
 
     def draw(self, win):
-        self.hitBox = (self.x + 5, self.y + 5, self.width - 10, self.height)
+        self.hitBox = (self.x + 5, self.y + 5, self.width - 7, self.height)
         if self.count >= 8:
             self.count = 0
         win.blit(pygame.transform.scale(self.img[self.count // 2], (64, 64)), (self.x, self.y))
