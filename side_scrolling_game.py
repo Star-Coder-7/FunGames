@@ -7,8 +7,8 @@ import random
 
 pygame.init()
 
-W, H = 800, 447
-win = pygame.display.set_mode((W, H))
+WIDTH, HEIGHT = 800, 447
+win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('SIDE SCROLLER')
 
 bg = pygame.image.load(os.path.join('img7', 'bg.png')).convert()
@@ -21,6 +21,7 @@ clock = pygame.time.Clock()
 class Player(object):
     run = [pygame.image.load(os.path.join('img7', str(x) + '.png')) for x in range(8, 16)]
     jump = [pygame.image.load(os.path.join('img7', str(x) + '.png')) for x in range(1, 8)]
+    fall = pygame.image.load(os.path.join('img7', '0.png'))
     slide = [pygame.image.load(os.path.join('img7', 'S1.png')), pygame.image.load(os.path.join('img7', 'S2.png')),
              pygame.image.load(os.path.join('img7', 'S2.png')), pygame.image.load(os.path.join('img7', 'S2.png')),
              pygame.image.load(os.path.join('img7', 'S2.png')), pygame.image.load(os.path.join('img7', 'S2.png')),
@@ -43,9 +44,12 @@ class Player(object):
         self.jumpCount = 0
         self.runCount = 0
         self.slideUp = False
+        self.falling = False
 
     def draw(self, win):
-        if self.jumping:
+        if self.falling:
+            win.blit(self.fall, (self.x, self.y + 30))
+        elif self.jumping:
             self.y -= self.jumpList[self.jumpCount] * 1.2
             win.blit(self.jump[self.jumpCount // 18], (self.x, self.y))
             self.jumpCount += 1
@@ -67,8 +71,8 @@ class Player(object):
                 self.slideCount = 0
                 self.slideUp = False
                 self.runCount = 0
+                self.hitBox = (self.x + 4, self.y, self.width - 24, self.height - 10)
             win.blit(self.slide[self.slideCount // 10], (self.x, self.y))
-            self.hitBox = (self.x + 4, self.y, self.width - 24, self.height - 10)
             self.slideCount += 1
 
         else:
@@ -77,6 +81,7 @@ class Player(object):
             win.blit(self.run[self.runCount // 6], (self.x, self.y))
             self.runCount += 1
             self.hitBox = (self.x + 4, self.y, self.width - 24, self.height - 13)
+        pygame.draw.rect(win, (255, 0, 0), self.hitBox, 2)
 
 
 class Saw(object):
@@ -99,6 +104,12 @@ class Saw(object):
         self.count += 1
         pygame.draw.rect(win, (255, 0, 0), self.hitBox, 2)
 
+    def collide(self, rect):
+        if rect[0] + rect[2] > self.hitBox[0] and rect[0] < self.hitBox[0] + self.hitBox[2]:
+            if rect[1] + rect[3] > self.hitBox[1]:
+                return True
+        return False
+
 
 class Spike(Saw):
     img = pygame.image.load(os.path.join('img7', 'spike.png'))
@@ -108,6 +119,12 @@ class Spike(Saw):
         win.blit(self.img, (self.x, self.y))
         pygame.draw.rect(win, (255, 0, 0), self.hitBox, 2)
 
+    def collide(self, rect):
+        if rect[0] + rect[2] > self.hitBox[0] and rect[0] < self.hitBox[0] + self.hitBox[2]:
+            if rect[1] < self.hitBox[3]:
+                return True
+        return False
+
 
 def redrawWindow():
     win.blit(bg, (bgX, 0))
@@ -115,21 +132,81 @@ def redrawWindow():
     runner.draw(win)
     for x in objects:
         x.draw(win)
+
+    font = pygame.font.SysFont('comicsans', 30)
+    text = font.render('Score: ' + str(score), 1, (0, 255, 0))
+    win.blit(text, (700, 10))
     pygame.display.update()
+
+
+def updateFile():
+    f = open('scores2.txt', 'r')
+    file = f.readlines()
+    last = int(file[0])
+
+    if last < int(score):
+        f.close()
+        file = open('scores2.txt', 'w')
+        file.write(str(score))
+        file.close()
+
+        return score
+
+    return last
+
+
+def end():
+    global pause, objects, speed, score
+    pause = 0
+    objects = []
+    speed = 30
+
+    run = True
+    while run:
+        pygame.time.delay(100)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                run = False
+        win.blit(bg, (0, 0))
+        largeFont = pygame.font.SysFont('comicsans', 80)
+        prevScore = largeFont.render('Previous Score: ' + str(updateFile()), 1, (0, 0, 255))
+        win.blit(prevScore, (WIDTH / 2 - prevScore.get_width() / 2, 200))
+        newScore = largeFont.render('Score: ' + str(score), 1, (0, 0, 255))
+        win.blit(newScore, (WIDTH / 2 - newScore.get_width() / 2, 320))
+        pygame.display.update()
+
+    score = 0
+    runner.falling = False
 
 
 runner = Player(200, 313, 64, 64)
 pygame.time.set_timer(USEREVENT + 1, 500)
 pygame.time.set_timer(USEREVENT + 2, random.randrange(2500, 5000))
-speed = 30
 
+speed = 30
+pause = 0
+fallSpeed = 0
 objects = []
 
 run = True
 while run:
-    redrawWindow()
+    score = speed // 5 - 6
+    if pause > 0:
+        pause += 1
+        if pause > fallSpeed * 2:
+            end()
 
     for i in objects:
+        if i.collide(runner.hitBox):
+            runner.falling = True
+
+            if pause == 0:
+                fallSpeed = speed
+                pause = 1
+
         i.x -= 1.4
         if i.x < i.width * -1:
             objects.pop(objects.index(i))
@@ -178,4 +255,8 @@ while run:
     if keys[pygame.K_LEFT] or keys[pygame.K_a]:
         speed -= 1
 
+    if keys[pygame.K_r]:
+        end()
+
     clock.tick(speed)
+    redrawWindow()

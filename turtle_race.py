@@ -55,7 +55,7 @@ def createTurtles(colors):
 
 screen = turtle.Screen()
 screen.setup(WIDTH, HEIGHT)
-screen.title('Turtle Racing!')
+screen.title('TURTLE RACING!')
 screen.bgcolor(random.choice(COLORS))
 
 racers = getRacers()

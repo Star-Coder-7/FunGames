@@ -1,5 +1,5 @@
 import pygame
-from constants import BLACK, RED, BLUE, ROWS, COLS, PURPLE, SQ_SIZE
+from constants import BLACK, RED, BLUE, ROWS, COLS, GREEN, SQ_SIZE
 from pieces import Pieces
 
 
@@ -7,8 +7,8 @@ class Board:
 
     def __init__(self):
         self.board = []
-        self.blueLeft = self.purpleLeft = 12
-        self.blueKings = self.purpleKings = 0
+        self.blueLeft = self.greenLeft = 12
+        self.blueKings = self.greenKings = 0
         self.createBoard()
 
     def drawSquares(self, win):
@@ -18,7 +18,7 @@ class Board:
                 pygame.draw.rect(win, RED, (row * SQ_SIZE, col * SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
     def evaluate(self):
-        return self.purpleLeft - self.blueLeft + (self.purpleKings * 0.5 - self.blueKings * 0.5)
+        return self.greenLeft - self.blueLeft + (self.greenKings * 0.5 - self.blueKings * 0.5)
 
     def getAllPieces(self, color):
         pieces = []
@@ -34,8 +34,8 @@ class Board:
 
         if row == ROWS - 1 or row == 0:
             piece.makeKing()
-            if piece.color == PURPLE:
-                self.purpleKings += 1
+            if piece.color == GREEN:
+                self.greenKings += 1
             else:
                 self.blueKings += 1
 
@@ -48,7 +48,7 @@ class Board:
             for col in range(COLS):
                 if col % 2 == ((row + 1) % 2):
                     if row < 3:
-                        self.board[row].append(Pieces(row, col, PURPLE))
+                        self.board[row].append(Pieces(row, col, GREEN))
                     elif row > 4:
                         self.board[row].append(Pieces(row, col, BLUE))
                     else:
@@ -71,12 +71,12 @@ class Board:
                 if piece.color == BLUE:
                     self.blueLeft -= 1
                 else:
-                    self.purpleLeft -= 1
+                    self.greenLeft -= 1
 
     def winner(self):
         if self.blueLeft <= 0:
-            return PURPLE
-        elif self.purpleLeft <= 0:
+            return GREEN
+        elif self.greenLeft <= 0:
             return BLUE
 
         return None
@@ -91,7 +91,7 @@ class Board:
             moves.update(self._traverseLeft(row - 1, max(row - 3, -1), -1, piece.color, left))
             moves.update(self._traverseRight(row - 1, max(row - 3, -1), -1, piece.color, right))
 
-        if piece.color == PURPLE or piece.king:
+        if piece.color == GREEN or piece.king:
             moves.update(self._traverseLeft(row + 1, min(row + 3, ROWS), 1, piece.color, left))
             moves.update(self._traverseRight(row + 1, min(row + 3, ROWS), 1, piece.color, right))
 

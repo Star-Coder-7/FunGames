@@ -1,5 +1,5 @@
 import pygame
-from constants import BLUE, PURPLE, PINK, SQ_SIZE
+from constants import BLUE, GREEN, PINK, SQ_SIZE
 from board import Board
 
 
@@ -62,7 +62,7 @@ class Game:
     def changeTurn(self):
         self.validMoves = {}
         if self.turn == BLUE:
-            self.turn = PURPLE
+            self.turn = GREEN
         else:
             self.turn = BLUE
 

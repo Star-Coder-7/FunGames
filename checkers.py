@@ -1,5 +1,5 @@
 import pygame
-from constants import WIDTH, HEIGHT, SQ_SIZE, PURPLE, BLUE
+from constants import WIDTH, HEIGHT, SQ_SIZE, GREEN, BLUE
 from checkers_game import Game
 from checkers_AI import minimax
 
@@ -26,6 +26,10 @@ def main():
     while run:
         clock.tick(MAX_FPS)
 
+        if game.turn == GREEN:
+            value, newBoard = minimax(game.getBoard(), 3, GREEN, game)
+            game.aiMove(newBoard)
+
         if game.winner() is not None:
             print(game.winner())
             run = False
@@ -42,16 +46,6 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q or event.key == pygame.K_SPACE:
                     run = False
-
-                if game.turn == PURPLE:
-                    if event.key == pygame.K_m:
-                        value, newBoard = minimax(game.getBoard(), 3, PURPLE, game)
-                        game.aiMove(newBoard)
-
-                if game.turn == BLUE:
-                    if event.key == pygame.K_m:
-                        value, newBoard = minimax(game.getBoard(), 3, PURPLE, game)
-                        game.aiMove(newBoard)
 
         game.update()
 
