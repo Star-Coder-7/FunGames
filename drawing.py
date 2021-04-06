@@ -13,22 +13,24 @@ import pygame
 from tkinter import *
 from tkinter import messagebox
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-from grid_module import colorPallet
-from grid_module import pixelArt
+import grid_module
+from grid_module import ColorPallet
+from grid_module import PixelArt
 from grid_module import Menu
 from grid_module import Grid
 import sys
+import os
 
 sys.setrecursionlimit(1000000)
 
 pygame.init()  # initialize pygame
-paintBrush = pygame.image.load("Paintbrush.png")
+paintBrush = pygame.image.load(os.path.join("img4/paintbrush.png"))
 currentVersion = 1.1
 
 # Set defaults for our screen size and rows and columns
 rows = 50
 cols = 50
-width = 600
+wid = 600
 height = 600
 
 checked = []
@@ -96,6 +98,7 @@ def openFile(path):
             v = False
         else:
             v = True
+
         initialize(columns, rows, v)  # Redraw the grid, tool bars, menu bars etc.
         name = path.split("/")
         changeCaption(name[-1])
@@ -115,34 +118,34 @@ def openFile(path):
         messagebox.showerror("Unsupported Version", "The file you have opened is created using a previous version of "
                                                     "this program. Please open it in that version.")
 
-    # Change pygame caption
 
-
+# Change pygame caption
 def changeCaption(txt):
     pygame.display.set_caption(txt)
 
 
 # This shows the file navigator for opening and saving files
 def showFileNav(op=False):
-    # Op is short form for open as open is a key word
+    # Op is short form for open as open is a key-word
     window = Tk()
     window.attributes("-topmost", True)
     window.withdraw()
     myFormats = [('Windows Text File', '*.txt')]
+
     if op:
         filename = askopenfilename(title="Open File", filetypes=myFormats)  # Ask the user which file they want to open
     else:
-        filename = asksaveasfilename(title="Save File",
-                                     filetypes=myFormats)  # Ask the user choose a path to save their file to
+        filename = asksaveasfilename(title="Save File", filetypes=myFormats)  # Ask the user choose a path to save their
+        # file to
 
-    if filename:  # If the user seletced something
+    if filename:  # If the user selected something
         x = filename[:]  # Make a copy
         return x
 
 
 # Onsubmit function for tkinter form for choosing pixel size
 def onsubmit(x=0):
-    global cols, rows, width, height
+    global cols, rows, wid, height
 
     st = rowsCols.get().split(',')  # Get the input from the text box
     window.quit()
@@ -190,26 +193,26 @@ def updateLabel(a, b, c):
     label1.config(text='Pixel Size: ' + str(l) + ', ' + str(w))  # Change label to show pixel size
 
 
-# CREATE SCREEN
+# CREATE THE SCREEN
 def initialize(cols, rows, showGrid=False):
-    global pallet, grid, win, tools, lineThickness, saveMenu
+    global pallet, Grid, win, tools, lineThickness, saveMenu
 
     # if grid already exists delete it then recreate it
     try:
-        del grid
+        del Grid
     except:
         pass
 
     pygame.display.set_icon(paintBrush)
-    win = pygame.display.set_mode((int(width), int(height) + 100))
+    win = pygame.display.set_mode((int(wid), int(height) + 100))
     pygame.display.set_caption('Untitled')
     win.fill((255, 255, 255))
 
     # CREATION OF OBJECTS
-    grid = pixelArt(win, int(width), int(height), cols, rows, showGrid)
+    grid = PixelArt(win, int(wid), int(height), cols, rows, showGrid)
     grid.drawGrid()
 
-    pallet = colorPallet(win, 90, 90, 3, 3, True, 10, grid.height + 2)
+    pallet = ColorPallet(win, 90, 90, 3, 3, True, 10, grid.height + 2)
     pallet.drawGrid()
 
     colorList = [(0, 0, 0), (255, 255, 255), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 168, 0),
@@ -242,15 +245,15 @@ def initialize(cols, rows, showGrid=False):
 
 
 # -----------------------------------------------------------------------#
-                  # TKINTER FORM FOR GETTING INPUT #
+                        # TKINTER FORM FOR GETTING INPUT
 window = Tk()
 window.title('Paint Program')
 
-t_var = StringVar()
-t_var.trace('w', updateLabel)
+tVar = StringVar()
+tVar.trace('w', updateLabel)
 
 label = Label(window, text='# Of Rows and Columns (25,50): ')
-rowsCols = Entry(window, textvariable=t_var)
+rowsCols = Entry(window, textvariable=tVar)
 
 label1 = Label(window, text="Pixel Size: 12.0, 12.0")
 var = IntVar()
@@ -268,6 +271,7 @@ window.update()
 mainloop()
 
 # ------------------------------------------------------------------------#
+
 
 # MAIN LOOP
 initialize(cols, rows, var.get())
@@ -305,11 +309,11 @@ while run:
             try:
                 pos = pygame.mouse.get_pos()
                 if pos[1] >= Grid.height:  # If the mouse is below the main drawing grid
-                    if tools.startx + tools.width >= pos[0] >= tools.startx <= pos[
-                        1] < + tools.starty + tools.height:  # If the mouse ic clicking on the tools grid
+                    if tools.startx + tools.width >= pos[0] >= tools.startx <= pos[1] < + tools.starty + tools.height:
+                        # If the mouse is clicking on the tools grid
                         replace = False
                         doFill = False
-                        tools.drawGrid()  # Redraw the grid so that we dont see the red highlight
+                        tools.drawGrid()  # Redraw the grid so that we don't see the red highlight
                         buttons = ['D', 'E', 'F', 'R', 'C']
                         tools.setText(buttons)
 
@@ -327,7 +331,7 @@ while run:
                             replace = True
                         elif clicked.text == 'C':  # Clear grid tool
                             Grid.clearGrid()
-                            tools.drawGrid()  # Redraw the grid so that we dont see the red highlight
+                            tools.drawGrid()  # Redraw the grid so that we don't see the red highlight
                             buttons = ['D', 'E', 'F', 'R', 'C']
                             tools.setText(buttons)
                             l = tools.getGrid()
@@ -339,7 +343,7 @@ while run:
                         clicked = pallet.clicked(pos)
                         color = clicked.getColor()  # Set current drawing color
 
-                        pallet = colorPallet(win, 90, 90, 3, 3, True, 10, Grid.height + 2)
+                        pallet = ColorPallet(win, 90, 90, 3, 3, True, 10, Grid.height + 2)
                         pallet.drawGrid()
 
                         colorList = [(0, 0, 0), (255, 255, 255), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0),
@@ -347,8 +351,8 @@ while run:
                         pallet.setColor(colorList)
                         clicked.show(Grid.screen, (255, 0, 0), 3, True)
 
-                    elif lineThickness.startx <= pos[0] <= lineThickness.startx + lineThickness.width and \
-                            lineThickness.starty <= pos[1] <= lineThickness.starty + lineThickness.height:
+                    elif lineThickness.startx + lineThickness.width >= pos[0] >= lineThickness.startx <= \
+                        pos[1] <= lineThickness.starty + lineThickness.height:
                         lineThickness.drawGrid()  # Redraw the grid so that we don't see the red highlight
                         buttons = ['1', '2', '3', '4']
                         lineThickness.setText(buttons)

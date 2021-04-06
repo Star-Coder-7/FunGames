@@ -7,7 +7,6 @@
 # ------------------------------------------------------
 # Class Descriptions are given above each class.
 
-
 import pygame
 
 pygame.init()
@@ -37,8 +36,8 @@ class Grid(object):
     def getGrid(self):
         return self.grid  # Return the grid list
 
-    def drawGrid(self, lineColor=(0, 0, 0)):  # This will draw the lines to create the grid, this is done so by simply
-                                              # creating overlapping boxes
+    def drawGrid(self, lineColor=(
+        0, 0, 0)):  # This will draw the lines to create the grid, this is done so by simply creating overlapping boxes
         x = self.startx
         y = self.starty
 
@@ -71,10 +70,10 @@ class Grid(object):
 
 # This is the concrete class used to draw pixels in a grid
 # The draw grid function in this class uses polymorphism to create a grid
-# full of pixel objects. It still contains the methods from the aboce class
+# full of pixel objects. It still contains the methods from the above class
 # has its own specific clearGrid(). Using ____.clearGrid() will simply set the color
 # to the original background color.
-class pixelArt(Grid):
+class PixelArt(Grid):
 
     def drawGrid(self):
         self.grid = []
@@ -98,7 +97,8 @@ class pixelArt(Grid):
     def clearGrid(self):  # This will set all of the pixels to the same color as the background color
         for pixels in self.grid:
             for p in pixels:
-                if self.showGrid:  # If the grid is to be showing we must redraw the pixels so that we can see the grid after we change their color
+                if self.showGrid:  # If the grid is to be showing we must redraw the pixels so that we can see the grid
+                                   # after we change their color
                     p.show(self.screen, self.bg, 0)
                     p.show(self.screen, (0, 0, 0), 1)
                 else:
@@ -108,10 +108,11 @@ class pixelArt(Grid):
 # This class is responsible for creating the color pallet in the bottom left hand side of the screen
 # and is a concrete class. The setColor() method simply takes a list of colors and assigns them to pixels
 # in the grid. This can only be called after the grid has been created.
-class colorPallet(pixelArt):
+class ColorPallet(PixelArt):
 
     def setColor(self,
-                 colorList):  # The colorList argument passed to the function must be equal to the number of pixels in the grid
+                 colorList):  # The colorList argument passed to the function must be equal to the number of pixels in
+                              # the grid
         colourCount = 0
 
         for pixels in self.getGrid():
@@ -133,7 +134,7 @@ class Menu(Grid):
             self.grid.append([])
             for j in range(self.rows):
                 self.grid[i].append(
-                    textObject(i, j, self.width, self.height, self.cols, self.rows, self.startx, self.starty))
+                    TextObject(i, j, self.width, self.height, self.cols, self.rows, self.startx, self.starty))
         # Set the text for each of those objects
         c = 0
         for spots in self.getGrid():
@@ -144,7 +145,7 @@ class Menu(Grid):
 
 # This class is responsible for displaying text and these objects are added into the grid.
 # The showText() method will display the text while the show() method will draw a square showing thr grid.
-class textObject:
+class TextObject():
 
     def __init__(self, i, j, width, height, cols, rows, startx=0, starty=0):
         self.col = i  # The column of the current instance in the grid
@@ -162,15 +163,15 @@ class textObject:
         myFont = pygame.font.SysFont('comicsansms', 15)
         text = myFont.render(self.text, 1, (0, 0, 0))
         win.blit(text, (self.x + (self.w / 2 - text.get_width() / 2), self.y + (
-                self.h / 2 - text.get_height() / 2)))  # This will make sure the text is center in the screen.
+            self.h / 2 - text.get_height() / 2)))  # This will make sure the text is center in the screen.
 
     def show(self, screen, color, st, outline=False):  # Draws a square displaying the area in the grid
         pygame.draw.rect(screen, color, (self.x, self.y, self.w, self.h), st)
 
 
-# This pixel object is responsible for stroing a color and displaying it to the screen. These objects are added into the
-# grid. The methods are named according to what they do.
-class Pixel:
+# This pixel object is responsible for storing a color and displaying it to the screen. These objects are added into
+# the grid. The methods are named according to what they do.
+class Pixel():
 
     def __init__(self, i, j, width, height, cols, rows, startx=0, starty=0, showGrid=False):
         self.col = i  # The column of the current instance
