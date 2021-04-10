@@ -70,13 +70,14 @@ if SOUND:
     pygame.mixer.music.play(-1)
 
 # POWER UP VARS
-powerUps = 7
+powerUps = 8
 hazard = False
 stickyPower = False
 mullagain = False
 superPower = False
+freeShot = False
 powerUpButtons = [[900, 35, 20, 'P', (255, 69, 0)], [1000, 35, 20, 'S', (255, 0, 255)],
-                  [950, 35, 20, 'M', (105, 105, 105)]]
+                  [950, 35, 20, 'M', (105, 105, 105)], [1050, 35, 20, 'F', (252, 211, 3)]]
 
 # FONTS
 myFont = pygame.font.SysFont('comicsans', 50)
@@ -181,6 +182,7 @@ class ScoreSheet:
 def error():
     if SOUND:
         wrong.play()
+
     root = tk.Tk()
     root.title('Error Window')
     root.attributes("-topmost", True)
@@ -193,7 +195,7 @@ def error():
         pass
 
 
-def endScreen():  # Display this screen when the user completes trhe course
+def endScreen():  # Display this screen when the user completes the course
     global start, starting, level, sheet, coins
     starting = True
     start = True
@@ -219,6 +221,7 @@ def endScreen():  # Display this screen when the user completes trhe course
     oldCoins = 0
     file = open('scores.txt', 'r')
     f = file.readlines()
+
     for line in file:
         l = line.split()
         if l[0] == 'score':
@@ -305,11 +308,12 @@ def endScreen():  # Display this screen when the user completes trhe course
 
 
 def setup(level):  # Setup objects for the level from module courses
-    global line, par, hole, power, ballStationary, objects, ballColor, stickyPower, superPower, mullagain
+    global line, par, hole, power, ballStationary, objects, ballColor, stickyPower, superPower, mullagain, freeShot
     ballColor = (255, 255, 255)
     stickyPower = False
     superPower = False
     mullagain = False
+    freeShot = False
     if level >= 10:
         endScreen()  # Completed the course
     else:
@@ -412,7 +416,7 @@ def redrawWindow(ball, line, shoot=False, update=True):
     # Draw information such as strokes, par and powerups left
     smallFont = pygame.font.SysFont('comicsansms', 20)
     text = smallFont.render('Left: ' + str(powerUps), 1, (64, 64, 64))
-    win.blit(text, (920, 55))
+    win.blit(text, (935, 55))
 
     text = parFont.render('Par: ' + str(par), 1, (64, 64, 64))
     win.blit(text, (20, 10))
@@ -592,7 +596,7 @@ while starting:
 
 # Game Loop for levels and collision
 while True:
-    if stickyPower is False and superPower is False:
+    if stickyPower is False and superPower is False and freeShot is False:
         ballColor = startScreen.getBallColor()
         if ballColor is None:
             ballColor = (255, 255, 255)
@@ -620,6 +624,8 @@ while True:
                         x[4] = (105, 75, 75)
                     elif x[3] == 'P':
                         x[4] = (170, 69, 0)
+                    elif x[3] == 'F':
+                        x[4] = (135, 118, 30)
                 else:
                     if x[3] == 'S':
                         x[4] = (255, 0, 255)
@@ -627,6 +633,8 @@ while True:
                         x[4] = (105, 105, 105)
                     elif x[3] == 'P':
                         x[4] = (255, 69, 0)
+                    elif x[3] == 'F':
+                        x[4] = (252, 211, 3)
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             lock = 0
@@ -640,13 +648,12 @@ while True:
                         error()
                         break
                     elif x[3] == 'S':  # Sticky Ball (sticks to any non-hazard)
-                        if stickyPower is False and superPower is False and powerUps > 0:
+                        if stickyPower is False and superPower is False and freeShot is False and powerUps > 0:
                             stickyPower = True
                             powerUps -= 1
                             ballColor = (255, 0, 255)
-                    elif x[
-                        3] == 'M':  # Mullagain, allows you to retry your sot from your previous position, will remove
-                                    # strokes u had on last shot
+                    elif x[3] == 'M':  # Mullagain, allows you to retry your shot from your previous position, will
+                                       # remove strokes you had on last shot
                         if mullagain is False and powerUps > 0 and strokes >= 1:
                             mullagain = True
                             powerUps -= 1
@@ -661,10 +668,15 @@ while True:
                                 strokes -= 1
                             hazard = False
                     elif x[3] == 'P':  # Power ball, power is multiplied by 1.5x
-                        if superPower is False and stickyPower is False and powerUps > 0:
+                        if superPower is False and stickyPower is False and freeShot is False and powerUps > 0:
                             superPower = True
                             powerUps -= 1
                             ballColor = (255, 69, 0)
+                    elif x[3] == 'F':  # Free Shot, doesn't add 1 to strokes and allows to play a normal shot
+                        if superPower is False and stickyPower is False and freeShot is False and powerUps > 0:
+                            freeShot = True
+                            powerUps -= 1
+                            ballColor = (252, 211, 3)
 
             # If you click the power up button don't lock angle
             if lock == 0:
@@ -688,7 +700,11 @@ while True:
                         if event.type == pygame.QUIT:
                             pygame.quit()
                         if event.type == pygame.MOUSEBUTTONDOWN:
-                            strokes += 1
+                            if freeShot:
+                                pass
+                            else:
+                                strokes += 1
+
                             hazard = False
                             if not onGreen():
                                 shoot = True
@@ -879,7 +895,7 @@ while True:
                             x = physics.findAngle(power, angle)
                             angle = x
 
-                        power = power * 0.5
+                        power *= 0.5
                         if time > 0.15:
                             time = 0
                         subtract = 0
@@ -932,7 +948,7 @@ while True:
                             x = physics.findAngle(power, angle)
                             angle = math.pi + x
 
-                        power = power * 0.5
+                        power *= 0.5
 
                         if time > 0.15:
                             time = 0
@@ -968,7 +984,7 @@ while True:
                             x = physics.findAngle(power, angle)
                             angle = math.pi * 2 - x
 
-                        power = power * 0.5
+                        power *= 0.5
 
                         if time > 0.15:
                             time = 0
@@ -993,7 +1009,7 @@ while True:
                     elif i[1] + i[3] < ballCords[1] < i[1] + i[3] + 10 and ballCords[0] + 2 > i[0] and \
                         ballCords[0] < i[0] + i[2] + 2:
                         power = physics.findPower(power, angle, time)
-                        if not (hitting):
+                        if not hitting:
                             hitting = True
                             if angle > math.pi / 2:
                                 x = physics.findAngle(power, angle)
@@ -1002,7 +1018,7 @@ while True:
                                 x = physics.findAngle(power, angle)
                                 angle = 2 * math.pi - x
 
-                        power = power * 0.5
+                        power *= 0.5
                         if time > 0.04:
                             time = 0
 
@@ -1039,6 +1055,7 @@ while True:
                         stickyPower = False
                         mullagain = False
                         superPower = False
+                        freeShot = False
                         break
 
         else:

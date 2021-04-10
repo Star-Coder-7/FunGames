@@ -12,7 +12,7 @@ def ballPath(startx, starty, power, ang, time):
     newx = round(distX + startx)
     newy = round(starty - distY)
 
-    return (newx, newy)
+    return newx, newy
 
 
 def findPower(power, angle, time):
@@ -20,7 +20,7 @@ def findPower(power, angle, time):
     vely = math.sin(angle) * power
 
     vfy = vely + (-9.8 * time)
-    vf = math.sqrt((vfy**2) + (velx**2))
+    vf = math.sqrt((vfy ** 2) + (velx ** 2))
 
     return vf
 
@@ -36,6 +36,6 @@ def findAngle(power, angle):
 
 def maxTime(power, angle):
     vely = math.sin(angle) * power
-    time = ((power * -1) - (math.sqrt(power**2))) / -9.8
+    time = ((power * -1) - (math.sqrt(power ** 2))) / -9.8
 
     return time / 2

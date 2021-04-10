@@ -3,7 +3,7 @@ import random
 pieceScore = {"K": 0, "Q": 10, "R": 5, "B": 3, "N": 3, "P": 1}
 CHECKMATE = 1000
 STALEMATE = 0
-DEPTH = 3
+DEPTH = 2
 
 
 def findRandomMove(validMoves):
@@ -49,11 +49,15 @@ Helper method to make first recursive call
 '''
 
 
-def findBestMinMaxMove(gs, validMoves):
-    global nextMove
+def findBestNegaMaxAlphaBetaMove(gs, validMoves):
+    global nextMove, counter
     nextMove = None
     random.shuffle(validMoves)
-    findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
+    counter = 0
+    # findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
+    # findMoveNegaMax(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
+    findMoveNegaMaxAlphaBeta(gs, validMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if gs.whiteToMove else -1)
+    print(counter)
     return nextMove
 
 
@@ -89,6 +93,52 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
             gs.undoMove()
 
         return minScore
+
+
+def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
+    global nextMove, counter
+    counter += 1
+    if depth == 0:
+        return turnMultiplier * scoreBoard(gs)
+
+    maxScore = -CHECKMATE
+    for move in validMoves:
+        gs.makeMove(move)
+        nextMoves = gs.getValidMoves()
+        score = -findMoveNegaMax(gs, nextMoves, depth - 1, -turnMultiplier)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                nextMove = move
+        gs.undoMove()
+
+    return maxScore
+
+
+def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier):
+    global nextMove, counter
+    counter += 1
+    if depth == 0:
+        return turnMultiplier * scoreBoard(gs)
+
+    # move ordering - implement later
+    maxScore = -CHECKMATE
+    for move in validMoves:
+        gs.makeMove(move)
+        nextMoves = gs.getValidMoves()
+        score = -findMoveNegaMaxAlphaBeta(gs, nextMoves, depth - 1, -beta, -alpha, -turnMultiplier)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                nextMove = move
+        gs.undoMove()
+
+        if maxScore > alpha:    # pruning happens
+            alpha = maxScore
+        if alpha >= beta:
+            break
+
+    return maxScore
 
 
 def scoreBoard(gs):

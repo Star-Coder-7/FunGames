@@ -88,7 +88,7 @@ def getBest():
         if l[0] == 'score':
             file.close()
             return l[1].strip()
-    return 0
+    return True
     file.close()
 
 
@@ -186,9 +186,9 @@ def drawShop(pos=None, click=False):
             surfaces.append([(200 * count) - 150, 50 + (xVal * 160), 160, 125])
             ballObjects.append(obj)
             if count % 5 == 0:
-                xVal = xVal + 1
+                xVal += 1
                 count = 0
-            c = c + 1
+            c += 1
     file.close()
 
     pygame.display.update()

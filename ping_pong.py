@@ -30,7 +30,7 @@ else:
 # now the shapes
 shapes = ["square", "circle", "triangle", "arrow", "classic", "turtle"]
 
-print("These are all the colors that the game may contain: \n", shapes)
+print("These are all the shapes that the game may contain: \n", shapes)
 
 user = str(input("\nDo you want to remove any shapes? If you want to, enter the shape or press enter to stop: ")) \
     .lower()
@@ -49,7 +49,7 @@ while user != "":
                    ).lower()
 else:
     print("\nHere is the final color list: \n", shapes)
-    print("\nAlright, now let's move on to shapes...\n")
+    print("\nAlright, now enjoy and have fun!!!")
 
 win = turtle.Screen()
 win.title("Ping Pong")
@@ -128,8 +128,8 @@ def paddleB_down():
 win.listen()
 win.onkeypress(paddleA_up, "w")
 win.onkeypress(paddleA_down, "s")
-win.onkeypress(paddleB_up, "Up")
-win.onkeypress(paddleB_down, "Right")
+win.onkeypress(paddleB_up, "o")
+win.onkeypress(paddleB_down, "l")
 
 # Main game loop
 while True:

@@ -26,9 +26,9 @@ def main():
     while run:
         clock.tick(MAX_FPS)
 
-        if game.turn == GREEN:
-            value, newBoard = minimax(game.getBoard(), 3, GREEN, game)
-            game.aiMove(newBoard)
+        # if game.turn == GREEN:
+        #     value, newBoard = minimax(game.getBoard(), 3, GREEN, game)
+        #     game.aiMove(newBoard)
 
         if game.winner() is not None:
             print(game.winner())

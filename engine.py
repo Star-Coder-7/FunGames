@@ -30,6 +30,7 @@ class GameState:
         self.checkmate = False
         self.stalemate = False
         self.enPassantPossible = ()
+        self.enPassantPossibleLog = [self.enPassantPossible]
         # Castling rights
         self.whiteCastleKingSide = True
         self.whiteCastleQueenSide = True
@@ -64,11 +65,6 @@ class GameState:
             promotedPiece = input("Change to Queen, Knight, Rook, or Bishop: ")
             self.board[move.endRow][move.endCol] = move.pieceMoved[0] + promotedPiece
 
-        # Update castling rights
-        self.updateCastleRights(move)
-        self.castleRightsLog.append(CastleRights(self.whiteCastleKingSide, self.blackCastleKingSide,
-                                                 self.whiteCastleQueenSide, self.blackCastleQueenSide))
-
         if move.castle:
             if move.endCol - move.startCol == 2:
                 self.board[move.endRow][move.endCol - 1] = self.board[move.endRow][move.endCol + 1]
@@ -76,6 +72,13 @@ class GameState:
             else:
                 self.board[move.endRow][move.endCol + 1] = self.board[move.endRow][move.endCol - 2]
                 self.board[move.endRow][move.endCol - 2] = '--'
+
+        self.enPassantPossibleLog.append(self.enPassantPossible)
+
+        # Update castling rights
+        self.updateCastleRights(move)
+        self.castleRightsLog.append(CastleRights(self.whiteCastleKingSide, self.blackCastleKingSide,
+                                                 self.whiteCastleQueenSide, self.blackCastleQueenSide))
 
     def undoMove(self):
         """
@@ -98,12 +101,11 @@ class GameState:
             if move.enPassant:
                 self.board[move.endRow][move.endCol] = '--'
                 self.board[move.startRow][move.endCol] = move.pieceCaptured
-                self.enPassantPossible = (move.endRow, move.endCol)
 
-            # Undoing 2 square pawn advance should make self.enPassantPossible = ()
-            if move.pieceMoved[1] == 'P' and abs(move.startRow - move.endRow) == 2:
-                self.enPassantPossible = ()
+            self.enPassantPossibleLog.pop()
+            self.enPassantPossible = self.enPassantPossibleLog[-1]
 
+            # give back castle rights if move took them away
             self.castleRightsLog.pop()
             castleRights = self.castleRightsLog[-1]
             self.whiteCastleKingSide = castleRights.wks
@@ -486,6 +488,14 @@ class GameState:
                     self.blackCastleKingSide = False
                 elif move.startCol == 0:
                     self.blackCastleQueenSide = False
+
+        # if a rook is captured, castling is not allowed
+        if move.pieceCaptured == 'wR':
+            self.whiteCastleKingSide = False
+            self.whiteCastleQueenSide = False
+        elif move.pieceCaptured == 'bR':
+            self.blackCastleKingSide = False
+            self.blackCastleQueenSide = False
 
 
 class CastleRights:
