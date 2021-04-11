@@ -88,7 +88,7 @@ def getBest():
         if l[0] == 'score':
             file.close()
             return l[1].strip()
-    return True
+    return 0
     file.close()
 
 
