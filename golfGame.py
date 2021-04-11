@@ -77,7 +77,7 @@ stickyPower = False
 mullagain = False
 superPower = False
 freeShot = False
-powerUpButtons = [[850, 35, 20, 'H', (73, 19, 209)], [900, 35, 20, 'P', (255, 69, 0)],
+powerUpButtons = [[850, 35, 20, 'H', (113, 86, 232)], [900, 35, 20, 'P', (255, 69, 0)],
                   [950, 35, 20, 'M', (105, 105, 105)], [1000, 35, 20, 'S', (255, 0, 255)],
                   [1050, 35, 20, 'F', (252, 211, 3)]]
 
@@ -642,7 +642,7 @@ while True:
                     elif x[3] == 'F':
                         x[4] = (252, 211, 3)
                     elif x[3] == 'H':
-                        x[4] = (73, 19, 209)
+                        x[4] = (113, 86, 232)
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             lock = 0
