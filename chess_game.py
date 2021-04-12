@@ -5,12 +5,16 @@ The main game / the driver file.
 import pygame
 import engine
 import chess_AI
+import os
 
 pygame.init()
 pygame.font.init()
 
+chess_icon = pygame.image.load(os.path.join('img3', 'chess_icon.ico'))
+pygame.display.set_icon(chess_icon)
+
 BOARD_WIDTH = BOARD_HEIGHT = 720
-MOVE_LOG_PANEL_WIDTH = 250
+MOVE_LOG_PANEL_WIDTH = 265
 MOVE_LOG_PANEL_HEIGHT = BOARD_HEIGHT
 DIMENSIONS = 8
 SQ_SIZE = BOARD_HEIGHT // DIMENSIONS
@@ -41,7 +45,7 @@ def main():
     win.fill(pygame.Color('white'))
     gs = engine.GameState()
     validMoves = gs.getValidMoves()
-    moveLogFont = pygame.font.SysFont("Arial", 12, False, False)
+    moveLogFont = pygame.font.SysFont("Arial", 14, False, False)
     gameOver = False
 
     moveMade = False  # Keeps track of player clicks
@@ -194,10 +198,26 @@ def drawMoveLog(win, gs, font):
     pygame.draw.rect(win, pygame.Color(0, 0, 0), moveLogRect)
     moveLog = gs.moveLog
     moveTexts = []
-    # textObject = font.render(text, 0, pygame.Color(13, 211, 214))
-    # textLocation = pygame.Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT).move(BOARD_WIDTH / 2 - textObject.get_width() / 2,
-    #                                                      BOARD_HEIGHT / 2 - textObject.get_height() / 2)
-    # win.blit(textObject, textLocation)
+    for i in range(0, len(moveLog), 2):
+        moveString = str(i // 2 + 1) + '. ' + str(moveLog[i]) + ', '
+        if i + 1 < len(moveLog):    # make sure black makes a move
+            moveString += str(moveLog[i + 1])
+
+        moveTexts.append(moveString)
+
+    movesPerRow = 3
+    padding = 5
+    textY = padding
+    lineSpacing = 2
+    for i in range(0, len(moveTexts), movesPerRow):
+        text = ""
+        for j in range(movesPerRow):
+            if i + j < len(moveTexts):
+                text += moveTexts[i + j] + '  '
+        textObject = font.render(text, True, pygame.Color(255, 255, 255))
+        textLocation = moveLogRect.move(padding, textY)
+        win.blit(textObject, textLocation)
+        textY += textObject.get_height() + lineSpacing
 
 
 '''

@@ -101,6 +101,24 @@ def getCoins():
             return l[1].strip()
 
 
+# Shop Colors:
+# 255,255,255-True
+# 0,255,0-True
+# 255,0,0-True
+# 0,0,255-True
+# 0,0,0-False
+# 64,64,64-False
+# 255,105,180-False
+# 0,255,255-True
+# 150,131,236-False
+# 50,70,0-False
+# 204,255,153-False
+# 204,204,255-False
+# 0,153,56-False
+# 255,152,52-False
+# 25,67,132-False
+
+
 def drawShop(pos=None, click=False):
     global ballObjects
     pygame.time.delay(20)

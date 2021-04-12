@@ -72,7 +72,7 @@ if SOUND:
 # POWER UP VARS
 powerUps = 9
 hazard = False
-hazardPenalty = False
+halo = False
 stickyPower = False
 mullagain = False
 superPower = False
@@ -311,9 +311,9 @@ def endScreen():  # Display this screen when the user completes the course
 
 def setup(level):  # Setup objects for the level from module courses
     global line, par, hole, power, ballStationary, objects, ballColor, stickyPower, superPower, mullagain, freeShot
-    global hazardPenalty
+    global halo
     ballColor = (255, 255, 255)
-    hazardPenalty = False
+    halo = False
     stickyPower = False
     superPower = False
     mullagain = False
@@ -600,7 +600,7 @@ while starting:
 
 # Game Loop for levels and collision
 while True:
-    if stickyPower is False and superPower is False and freeShot is False and hazardPenalty is False:
+    if stickyPower is False and superPower is False and freeShot is False and halo is False:
         ballColor = startScreen.getBallColor()
         if ballColor is None:
             ballColor = (255, 255, 255)
@@ -657,7 +657,7 @@ while True:
                         break
                     elif x[3] == 'S':  # Sticky Ball (sticks to any non-hazard)
                         if superPower is False and stickyPower is False and freeShot is False and \
-                            hazardPenalty is False and powerUps > 0:
+                            halo is False and powerUps > 0:
                             stickyPower = True
                             powerUps -= 1
                             ballColor = (255, 0, 255)
@@ -683,14 +683,14 @@ while True:
                             ballColor = (255, 69, 0)
                     elif x[3] == 'F':  # Free Shot, doesn't add 1 to strokes and allows to play a normal shot
                         if superPower is False and stickyPower is False and freeShot is False and \
-                            hazardPenalty is False and powerUps > 0:
+                            halo is False and powerUps > 0:
                             freeShot = True
                             powerUps -= 1
                             ballColor = (252, 211, 3)
                     elif x[3] == 'H':  # Hazard Penalty, removes +1 penalty stroke for colliding with hazards
                         if superPower is False and stickyPower is False and freeShot is False and \
-                            hazardPenalty is False and powerUps > 0:
-                            hazardPenalty = True
+                            halo is False and powerUps > 0:
+                            halo = True
                             powerUps -= 1
                             ballColor = (73, 19, 209)
 
@@ -856,7 +856,7 @@ while True:
                         powerAngle = math.pi
                         shoot = False
 
-                        if hazardPenalty is True:
+                        if halo is True:
                             label = myFont.render('Laser Hazard, +0 stroke', 1, (255, 0, 0))
                         else:
                             strokes += 1
@@ -866,7 +866,7 @@ while True:
                         pygame.display.update()
                         pygame.time.delay(1000)
                         ballColor = (255, 255, 255)
-                        hazardPenalty = False
+                        halo = False
                         stickyPower = False
                         superPower = False
                         mullagain = False
@@ -888,7 +888,7 @@ while True:
                         powerAngle = math.pi
                         shoot = False
 
-                        if hazardPenalty is True:
+                        if halo is True:
                             label = myFont.render('Water Hazard, +0 stroke', 1, (0, 0, 255))
                         else:
                             strokes += 1
@@ -901,7 +901,7 @@ while True:
                         pygame.display.update()
                         pygame.time.delay(1500)
                         ballColor = (255, 255, 255)
-                        hazardPenalty = False
+                        halo = False
                         stickyPower = False
                         superPower = False
                         mullagain = False
@@ -1081,7 +1081,7 @@ while True:
                         power = 1
                         powerAngle = math.pi
                         ballColor = (255, 255, 255)
-                        hazardPenalty = False
+                        halo = False
                         stickyPower = False
                         superPower = False
                         mullagain = False
