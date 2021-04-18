@@ -70,7 +70,7 @@ if SOUND:
     pygame.mixer.music.play(-1)
 
 # POWER UP VARS
-powerUps = 9
+powerups = 9
 hazard = False
 halo = False
 stickyPower = False
@@ -218,6 +218,22 @@ def endScreen():  # Display this screen when the user completes the course
     win.blit(text, (winWidth / 2 - text.get_width() / 2, 470))
     pygame.display.update()
 
+    if powerups == 9 and sheet.getScore() <= -1:
+        text = myFont.render('Clean Ball Awarded and Negative Score!!!', 1, (54, 204, 31))
+        win.blit(text, (winWidth / 2 - text.get_width() / 2, 170))
+        coins += 10
+        pygame.display.update()
+    elif powerups == 9:
+        text = myFont.render('Clean Ball Awarded!!!', 1, (54, 204, 31))
+        win.blit(text, (winWidth / 2 - text.get_width() / 2, 170))
+        coins += 5
+        pygame.display.update()
+    elif sheet.getScore() <= -1:
+        text = myFont.render('Negative Score!!!', 1, (54, 204, 31))
+        win.blit(text, (winWidth / 2 - text.get_width() / 2, 170))
+        coins += 5
+        pygame.display.update()
+
     # RE-WRITE TEXT FILE Containing Scores
     oldScore = 0
     oldCoins = 0
@@ -313,11 +329,11 @@ def setup(level):  # Setup objects for the level from module courses
     global line, par, hole, power, ballStationary, objects, ballColor, stickyPower, superPower, mullagain, freeShot
     global halo
     ballColor = (255, 255, 255)
-    halo = False
     stickyPower = False
     superPower = False
     mullagain = False
     freeShot = False
+    halo = False
     if level >= 10:
         endScreen()  # Completed the course
     else:
@@ -419,7 +435,7 @@ def redrawWindow(ball, line, shoot=False, update=True):
 
     # Draw information such as strokes, par and powerups left
     smallFont = pygame.font.SysFont('comicsansms', 20)
-    text = smallFont.render('Left: ' + str(powerUps), 1, (64, 64, 64))
+    text = smallFont.render('Left: ' + str(powerups), 1, (64, 64, 64))
     win.blit(text, (935, 55))
 
     text = parFont.render('Par: ' + str(par), 1, (64, 64, 64))
@@ -652,20 +668,20 @@ while True:
                 # Check collision of mouse and button
                 if x[0] + x[2] > pos[0] > x[0] - x[2] and x[1] + x[2] > pos[1] > x[1] - x[2]:
                     lock = -1
-                    if powerUps == 0:
+                    if powerups == 0:
                         error()
                         break
                     elif x[3] == 'S':  # Sticky Ball (sticks to any non-hazard)
                         if superPower is False and stickyPower is False and freeShot is False and \
-                            halo is False and powerUps > 0:
+                            halo is False and powerups > 0:
                             stickyPower = True
-                            powerUps -= 1
+                            powerups -= 1
                             ballColor = (255, 0, 255)
                     elif x[3] == 'M':  # Mullagain, allows you to retry your shot from your previous position, will
                                        # remove strokes you had on last shot
-                        if mullagain is False and powerUps > 0 and strokes >= 1:
+                        if mullagain is False and powerups > 0 and strokes >= 1:
                             mullagain = True
-                            powerUps -= 1
+                            powerups -= 1
                             ballStationary = shootPos
                             pos = pygame.mouse.get_pos()
                             angle = findAngle(pos)
@@ -677,21 +693,21 @@ while True:
                                 strokes -= 1
                             hazard = False
                     elif x[3] == 'P':  # Power ball, power is multiplied by 1.5x
-                        if superPower is False and stickyPower is False and freeShot is False and powerUps > 0:
+                        if superPower is False and stickyPower is False and freeShot is False and powerups > 0:
                             superPower = True
-                            powerUps -= 1
+                            powerups -= 1
                             ballColor = (255, 69, 0)
                     elif x[3] == 'F':  # Free Shot, doesn't add 1 to strokes and allows to play a normal shot
                         if superPower is False and stickyPower is False and freeShot is False and \
-                            halo is False and powerUps > 0:
+                            halo is False and powerups > 0:
                             freeShot = True
-                            powerUps -= 1
+                            powerups -= 1
                             ballColor = (252, 211, 3)
                     elif x[3] == 'H':  # Hazard Penalty, removes +1 penalty stroke for colliding with hazards
                         if superPower is False and stickyPower is False and freeShot is False and \
-                            halo is False and powerUps > 0:
+                            halo is False and powerups > 0:
                             halo = True
-                            powerUps -= 1
+                            powerups -= 1
                             ballColor = (73, 19, 209)
 
             # If you click the power up button don't lock angle
@@ -857,10 +873,10 @@ while True:
                         shoot = False
 
                         if halo is True:
-                            label = myFont.render('Laser Hazard, +0 stroke', 1, (255, 0, 0))
+                            label = myFont.render('Laser Hazard, no penalty stroke', 1, (255, 0, 0))
                         else:
                             strokes += 1
-                            label = myFont.render('Laser Hazard, +1 stroke', 1, (255, 0, 0))
+                            label = myFont.render('Laser Hazard, +1 penalty stroke', 1, (255, 0, 0))
 
                         win.blit(label, (winWidth / 2 - label.get_width() / 2, winHeight / 2 - label.get_height() / 2))
                         pygame.display.update()
@@ -889,10 +905,10 @@ while True:
                         shoot = False
 
                         if halo is True:
-                            label = myFont.render('Water Hazard, +0 stroke', 1, (0, 0, 255))
+                            label = myFont.render('Water Hazard, no penalty stroke', 1, (0, 0, 255))
                         else:
                             strokes += 1
-                            label = myFont.render('Water Hazard, +1 stroke', 1, (0, 0, 255))
+                            label = myFont.render('Water Hazard, +1 penalty stroke', 1, (0, 0, 255))
 
                         if SOUND:
                             splash.play()
@@ -1106,6 +1122,12 @@ while True:
                     var = False
 
             fade()
+
+            if overHole(ballStationary[0], ballStationary[1]) and len(onGreen()) == 0:
+                text = myFont.render('SWISH!!! -1 Stroke Reward', 1, (255, 0, 255))
+                win.blit(text, (winWidth / 2 - text.get_width() / 2, 170))
+                strokes -= 1
+
             if strokes == 1:
                 holeInOne()
             else:
