@@ -205,40 +205,37 @@ class GameState:
         if self.whiteToMove:
             moveAmount = -1
             startRow = 6
-            backRow = 0
             enemyColor = 'b'
+            kingRow, kingCol = self.whiteKingLoc
         else:
             moveAmount = 1
             startRow = 1
-            backRow = 7
             enemyColor = 'w'
-
-        pawnPromotion = False
+            kingRow, kingCol = self.blackKingLoc
 
         if self.board[r + moveAmount][c] == '--':
             if not piecePinned or pinDirection == (moveAmount, 0):
-                if r + moveAmount == backRow:
-                    pawnPromotion = True
-                moves.append(Move((r, c), (r + moveAmount, c), self.board, pawnPromotion=pawnPromotion))
+                moves.append(Move((r, c), (r + moveAmount, c), self.board))
                 if r == startRow and self.board[r + 2 * moveAmount][c] == '--':
                     moves.append(Move((r, c), (r + 2 * moveAmount, c), self.board))
         if c - 1 >= 0:  # capture to the left
             if not piecePinned or pinDirection == (moveAmount, -1):
                 if self.board[r + moveAmount][c - 1][0] == enemyColor:
-                    if r + moveAmount == backRow:
-                        pawnPromotion = True
-                    moves.append(Move((r, c), (r + moveAmount, c - 1), self.board, pawnPromotion=pawnPromotion))
+                    moves.append(Move((r, c), (r + moveAmount, c - 1), self.board))
                 if (r + moveAmount, c - 1) == self.enPassantPossible:
+                    attackingPiece = blockingPiece = False
+                    if kingRow == r:
+                        if kingCol < c:  # if king is left of the pawn
+                            # inside range between king and pawn, outside range between pawn border
+                            insideRange = range(kingCol + 1, c - 1)
                     moves.append(Move((r, c), (r + moveAmount, c - 1), self.board, enPassant=True))
-        if c + 1 <= 7:
+        if c + 1 <= 7:  # capture to the right
             if not piecePinned or pinDirection == (moveAmount, 1):
                 if self.board[r + moveAmount][c + 1][0] == enemyColor:
-                    if r + moveAmount == backRow:
-                        pawnPromotion = True
-                    moves.append(Move((r, c), (r + moveAmount, c + 1), self.board, pawnPromotion=pawnPromotion))
+                    moves.append(Move((r, c), (r + moveAmount, c + 1), self.board))
                 if (r + moveAmount, c + 1) == self.enPassantPossible:
                     moves.append(Move((r, c), (r + moveAmount, c + 1), self.board, enPassant=True))
-
+i
     def getRookMoves(self, r, c, moves):
         piecePinned = False
         pinDirection = ()
