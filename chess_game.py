@@ -6,6 +6,7 @@ import pygame
 import engine
 import chess_AI
 import os
+import random
 
 pygame.init()
 pygame.font.init()
@@ -14,7 +15,7 @@ chess_icon = pygame.image.load(os.path.join('img3', 'chess_icon.ico'))
 pygame.display.set_icon(chess_icon)
 
 BOARD_WIDTH = BOARD_HEIGHT = 720
-MOVE_LOG_PANEL_WIDTH = 265
+MOVE_LOG_PANEL_WIDTH = 285
 MOVE_LOG_PANEL_HEIGHT = BOARD_HEIGHT
 DIMENSIONS = 8
 SQ_SIZE = BOARD_HEIGHT // DIMENSIONS
@@ -40,9 +41,8 @@ This is the main driver code.
 
 def main():
     win = pygame.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
-    pygame.display.set_caption("CHESS GAME")
+    pygame.display.set_caption("CHESS")
     clock = pygame.time.Clock()
-    win.fill(pygame.Color('white'))
     gs = engine.GameState()
     validMoves = gs.getValidMoves()
     moveLogFont = pygame.font.SysFont("Arial", 14, False, False)
@@ -50,13 +50,16 @@ def main():
 
     moveMade = False  # Keeps track of player clicks
     animate = False  # Flag variable for when to animate
+    moveCounter = 0  # to track the number of moves
     playerClicks = []  # keeps track of player clicks
 
     loadImages()  # Only done once every run
     sqSelected = ()  # for the last square the user clicked
 
-    playerOne = True  # True if human is playing white, otherwise it's False because AI goes first.
-    playerTwo = True  # same as above but vice versa
+    bools = True, False
+
+    playerOne = False   # random.choice(bools)
+    playerTwo = False   # random.choice(bools)
 
     run = True
     while run:
@@ -84,6 +87,7 @@ def main():
                         for i in range(len(validMoves)):
                             if move == validMoves[i]:
                                 gs.makeMove(validMoves[i])
+                                moveCounter += 1
                                 moveMade = True
                                 animate = True
                                 sqSelected = ()  # reset square selection
@@ -96,6 +100,7 @@ def main():
                     run = False
                 elif event.key == pygame.K_u or event.key == pygame.K_z:
                     gs.undoMove()
+                    moveCounter -= 1
                     moveMade = True
                     animate = False
                     gameOver = False
@@ -110,10 +115,11 @@ def main():
 
         # AI move finder
         if not gameOver and not humanTurn:
-            AImove = chess_AI.findBestNegaMaxAlphaBetaMove(gs, validMoves)
+            AImove = chess_AI.findBestMove(gs, validMoves)
             if AImove is None:
                 AImove = chess_AI.findRandomMove(validMoves)
             gs.makeMove(AImove)
+            moveCounter += 1
             moveMade = True
             animate = True
 
@@ -129,9 +135,13 @@ def main():
         if gs.checkmate or gs.stalemate:
             gameOver = True
 
-            text = "STALEMATE!!!\nGame has ended due to a stalemate." if gs.stalemate else \
-                "CONGRATULATIONS BLACK!!!\nYou won by a checkmate." if gs.whiteToMove else \
-                    "CONGRATULATIONS WHITE!!!\nYou won by a checkmate."
+            text = "IT'S A STALEMATE!!!" if gs.stalemate else "BLACK WON BY CHECKMATE!!!" if gs.whiteToMove else \
+                "WHITE WON BY CHECKMATE!!!"
+
+            drawEndGameText(win, text)
+
+        if moveCounter == 75:
+            text = "IT'S A DRAW DUE TO 75 MOVES!!!"
             drawEndGameText(win, text)
 
         clock.tick(MAX_FPS)
@@ -200,7 +210,7 @@ def drawMoveLog(win, gs, font):
     moveTexts = []
     for i in range(0, len(moveLog), 2):
         moveString = str(i // 2 + 1) + '. ' + str(moveLog[i]) + ', '
-        if i + 1 < len(moveLog):    # make sure black makes a move
+        if i + 1 < len(moveLog):  # make sure black makes a move
             moveString += str(moveLog[i + 1])
 
         moveTexts.append(moveString)
@@ -253,11 +263,11 @@ def animateMove(move, win, board, clock):
 
 def drawEndGameText(win, text):
     font = pygame.font.SysFont("Helvetica", 32, True, False)
-    textObject = font.render(text, 0, pygame.Color(13, 211, 214))
+    textObject = font.render(text, 0, pygame.Color(232, 128, 128))
     textLocation = pygame.Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT).move(BOARD_WIDTH / 2 - textObject.get_width() / 2,
                                                                      BOARD_HEIGHT / 2 - textObject.get_height() / 2)
     win.blit(textObject, textLocation)
-    textObject = font.render(text, 0, pygame.Color(0, 0, 0))
+    textObject = font.render(text, 0, pygame.Color(20, 62, 217))
     win.blit(textObject, textLocation.move(2, 2))
 
 

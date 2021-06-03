@@ -125,7 +125,10 @@ T = [['.....',
       '.....']]
 
 shapes = [S, Z, I, O, J, L, T]
-shapeColors = [(0, 255, 0), (255, 0, 0), (0, 255, 255), (255, 255, 0), (255, 165, 0), (0, 0, 255), (128, 0, 128)]
+shapeColors = [(214, 21, 21), (214, 92, 21), (214, 130, 21), (214, 198, 21), (188, 214, 21), (146, 214, 21),
+               (98, 214, 21), (21, 214, 121), (21, 214, 211), (21, 163, 214), (21, 118, 214), (21, 40, 214),
+               (101, 21, 214), (143, 21, 214), (195, 21, 214), (214, 21, 172)]
+
 # index 0 - 6 represent shape
 
 
@@ -137,7 +140,7 @@ class Piece(object):
         self.x = column
         self.y = row
         self.shape = shape
-        self.color = shapeColors[shapes.index(shape)]
+        self.color = random.choice(shapeColors)
         self.rotation = 0  # number from 0-3
 
 
@@ -207,9 +210,11 @@ def drawGrid(surface, row, col):
     sx = topLeft_x
     sy = topLeft_y
     for i in range(row):
-        pygame.draw.line(surface, (128, 128, 128), (sx, sy + i * 30), (sx + playWidth, sy + i * 30))  # horizontal
+        pygame.draw.line(surface, (random.choice(shapeColors)), (sx, sy + i * 30), (sx + playWidth, sy + i * 30))
+        # horizontal lines
         for j in range(col):
-            pygame.draw.line(surface, (128, 128, 128), (sx + j * 30, sy), (sx + j * 30, sy + playHeight))  # vertical
+            pygame.draw.line(surface, (random.choice(shapeColors)), (sx + j * 30, sy), (sx + j * 30, sy + playHeight))
+            # vertical lines
 
     # This is the code for horizontal and vertical lines
 
@@ -240,7 +245,7 @@ def clearRows(grid, locked):
 
 def drawNextShape(shape, surface):
     font = pygame.font.SysFont('monospace', 30)
-    label = font.render('Next Shape', 1, (255, 255, 255))
+    label = font.render('Next Shape', 1, (random.choice(shapeColors)))
 
     sx = topLeft_x + playWidth + 50
     sy = topLeft_y + playHeight / 2 - 100
@@ -252,14 +257,15 @@ def drawNextShape(shape, surface):
             if column == '0':
                 pygame.draw.rect(surface, shape.color, (sx + j * 30, sy + i * 30, 30, 30), 0)
 
-    surface.blit(label, (sx + 10, sy- 30))
+    surface.blit(label, (sx + 2, sy - 15))
 
 
 def drawWindow(surface):
     surface.fill((0, 0, 0))
     # Tetris Title
     font = pygame.font.SysFont('comicsans', 60)
-    label = font.render('TETRIS', 1, (255, 255, 255))
+    label = font.render('TETRIS', 1, (random.choice(shapeColors)))
+    # label2 = font.render('Score:', 1, (random.choice(shapeColors)))
 
     surface.blit(label, (topLeft_x + playWidth / 2 - (label.get_width() / 2), 30))
 
@@ -300,7 +306,6 @@ def mainMenu():
             levelTime = 0
             if fallSpeed > 0.15:
                 fallSpeed -= 0.005
-
 
         # PIECE FALLING CODE
         if fallTime / 1000 >= fallSpeed:
@@ -375,7 +380,7 @@ def mainMenu():
         if checkLost(lockedPositions):
             run = False
 
-    drawTextMiddle("You Lost", 40, (255, 255, 255), win)
+    drawTextMiddle("Game ended", 40, (255, 255, 255), win)
     pygame.display.update()
     pygame.time.delay(2000)
 
@@ -400,4 +405,4 @@ def main():
 win = pygame.display.set_mode((sWidth, sHeight))
 pygame.display.set_caption('TETRIS')
 
-main()  # start game
+main()   # start game

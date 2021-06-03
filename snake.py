@@ -4,7 +4,6 @@ import random
 pygame.init()
 
 width = height = 500
-
 cols = 25
 rows = 20
 

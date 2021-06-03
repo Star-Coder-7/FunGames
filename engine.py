@@ -218,6 +218,7 @@ class GameState:
                 moves.append(Move((r, c), (r + moveAmount, c), self.board))
                 if r == startRow and self.board[r + 2 * moveAmount][c] == '--':
                     moves.append(Move((r, c), (r + 2 * moveAmount, c), self.board))
+
         if c - 1 >= 0:  # capture to the left
             if not piecePinned or pinDirection == (moveAmount, -1):
                 if self.board[r + moveAmount][c - 1][0] == enemyColor:
@@ -228,14 +229,48 @@ class GameState:
                         if kingCol < c:  # if king is left of the pawn
                             # inside range between king and pawn, outside range between pawn border
                             insideRange = range(kingCol + 1, c - 1)
-                    moves.append(Move((r, c), (r + moveAmount, c - 1), self.board, enPassant=True))
+                            outsideRange = range(c + 1, 8)
+                        else:  # king is right of pawn
+                            insideRange = range(kingCol - 1, c, -1)
+                            outsideRange = range(c - 2, -1, -1)
+                        for i in insideRange:
+                            if self.board[r][i] != "--":
+                                blockingPiece = True
+                        for i in outsideRange:
+                            square = self.board[r][i]
+                            if square[0] == enemyColor and (square[1] == "R" or square[1] == "Q"):
+                                attackingPiece = True
+                            elif square != "--":
+                                blockingPiece = True
+                    if not attackingPiece or blockingPiece:
+                        moves.append(Move((r, c), (r + moveAmount, c - 1), self.board, enPassant=True))
+
         if c + 1 <= 7:  # capture to the right
             if not piecePinned or pinDirection == (moveAmount, 1):
                 if self.board[r + moveAmount][c + 1][0] == enemyColor:
                     moves.append(Move((r, c), (r + moveAmount, c + 1), self.board))
                 if (r + moveAmount, c + 1) == self.enPassantPossible:
-                    moves.append(Move((r, c), (r + moveAmount, c + 1), self.board, enPassant=True))
-i
+                    attackingPiece = blockingPiece = False
+                    if kingRow == r:
+                        if kingCol < c:  # if king is left of the pawn
+                            # inside range between king and pawn, outside range between pawn border
+                            insideRange = range(kingCol + 1, c)
+                            outsideRange = range(c + 2, 8)
+                        else:  # king is right of pawn
+                            insideRange = range(kingCol - 1, c + 1, -1)
+                            outsideRange = range(c - 1, -1, -1)
+                        for i in insideRange:
+                            if self.board[r][i] != "--":
+                                blockingPiece = True
+                        for i in outsideRange:
+                            square = self.board[r][i]
+                            if square[0] == enemyColor and (square[1] == "R" or square[1] == "Q"):
+                                attackingPiece = True
+                            elif square != "--":
+                                blockingPiece = True
+                    if not attackingPiece or blockingPiece:
+                        moves.append(Move((r, c), (r + moveAmount, c + 1), self.board, enPassant=True))
+
     def getRookMoves(self, r, c, moves):
         piecePinned = False
         pinDirection = ()
@@ -357,12 +392,12 @@ i
 
     def getKingSideCastleMoves(self, r, c, moves, allyColor):
         if self.board[r][c + 1] == '--' and self.board[r][c + 2] == '--' and not \
-            self.squareUnderAttack(r, c + 1, allyColor) and not self.squareUnderAttack(r, c + 2, allyColor):
+                self.squareUnderAttack(r, c + 1, allyColor) and not self.squareUnderAttack(r, c + 2, allyColor):
             moves.append(Move((r, c), (r, c + 2), self.board, castle=True))
 
     def getQueenSideCastleMoves(self, r, c, moves, allyColor):
         if self.board[r][c - 1] == '--' and self.board[r][c - 2] == '--' and self.board[r][c - 3] == '--' and not \
-            self.squareUnderAttack(r, c - 1, allyColor) and not self.squareUnderAttack(r, c - 2, allyColor):
+                self.squareUnderAttack(r, c - 1, allyColor) and not self.squareUnderAttack(r, c - 2, allyColor):
             moves.append(Move((r, c), (r, c - 2), self.board, castle=True))
 
     def squareUnderAttack(self, r, c, allyColor):
@@ -380,9 +415,9 @@ i
                     elif endPiece[0] == enemyColor:
                         category = endPiece[1]
                         if (0 <= j <= 3 and category == 'R') or (4 <= j <= 7 and category == 'B') or \
-                            (i == 1 and category == 'P' and
-                             ((enemyColor == 'w' and 6 <= j <= 7) or (enemyColor == 'b' and 4 <= j <= 5))) or \
-                            (category == 'Q') or (i == 1 and category == 'K'):
+                                (i == 1 and category == 'P' and
+                                 ((enemyColor == 'w' and 6 <= j <= 7) or (enemyColor == 'b' and 4 <= j <= 5))) or \
+                                (category == 'Q') or (i == 1 and category == 'K'):
 
                             return True
                         else:
@@ -438,9 +473,9 @@ i
                     elif endPiece[0] == enemyColor:
                         category = endPiece[1]
                         if (0 <= j <= 3 and category == 'R') or (4 <= j <= 7 and category == 'B') or \
-                            (i == 1 and category == 'P' and
-                             ((enemyColor == 'w' and 6 <= j <= 7) or (enemyColor == 'b' and 4 <= j <= 5))) or \
-                            (category == 'Q') or (i == 1 and category == 'K'):
+                                (i == 1 and category == 'P' and
+                                 ((enemyColor == 'w' and 6 <= j <= 7) or (enemyColor == 'b' and 4 <= j <= 5))) or \
+                                (category == 'Q') or (i == 1 and category == 'K'):
                             if possiblePin == ():
                                 inCheck = True
                                 checks.append((endRow, endCol, d[0], d[1]))
