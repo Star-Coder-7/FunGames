@@ -133,7 +133,6 @@ def redrawWindow():
     s.draw(win)
     snack.draw(win)
     pygame.display.update()
-    pass
 
 
 def drawGrid(w, rows, surface):
@@ -143,8 +142,8 @@ def drawGrid(w, rows, surface):
     y = 0
 
     for l in range(rows):
-        x = x + sizeBtwn
-        y = y + sizeBtwn
+        x += sizeBtwn
+        y += sizeBtwn
 
         pygame.draw.line(surface, (255, 255, 255), (x, 0), (x, w))
         pygame.draw.line(surface, (255, 255, 255), (0, y), (w, y))
@@ -165,18 +164,18 @@ def randomSnack(rows, item):
     return x, y
 
 
-def main():
+def mainRun():
     global s, snack, win
     colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255), (0, 255, 255), (255, 255, 255)]
     win = pygame.display.set_mode((width, height))
     s = Snake(random.choice(colors), (10, 10))
     s.addCube()
     snack = Cube(randomSnack(rows, s), color=random.choice(colors))
-    flag = True
+    run = True
     clock = pygame.time.Clock()
     scores = []
 
-    while flag:
+    while run:
         pygame.time.delay(50)
         clock.tick(10)
         s.move()
@@ -201,4 +200,4 @@ def main():
         redrawWindow()
 
 
-main()
+mainRun()

@@ -16,8 +16,13 @@ playWidth = 300  # meaning 300 // 10 = 30 width per block
 playHeight = 600  # meaning 600 // 20 = 30 height per block
 blockSize = 30
 
+win = pygame.display.set_mode((sWidth, sHeight))
+pygame.display.set_caption('TETRIS')
+
 topLeft_x = (sWidth - playWidth) // 2
 topLeft_y = sHeight - playHeight
+
+score = 0
 
 
 # SHAPE FORMATS
@@ -125,9 +130,9 @@ T = [['.....',
       '.....']]
 
 shapes = [S, Z, I, O, J, L, T]
-shapeColors = [(214, 21, 21), (214, 92, 21), (214, 130, 21), (214, 198, 21), (188, 214, 21), (146, 214, 21),
-               (98, 214, 21), (21, 214, 121), (21, 214, 211), (21, 163, 214), (21, 118, 214), (21, 40, 214),
-               (101, 21, 214), (143, 21, 214), (195, 21, 214), (214, 21, 172)]
+colors = [(214, 21, 21), (214, 92, 21), (214, 130, 21), (214, 198, 21), (188, 214, 21), (146, 214, 21),
+          (98, 214, 21), (21, 214, 121), (21, 214, 211), (21, 163, 214), (21, 118, 214), (21, 40, 214),
+          (101, 21, 214), (143, 21, 214), (195, 21, 214), (214, 21, 172)]
 
 # index 0 - 6 represent shape
 
@@ -140,7 +145,7 @@ class Piece(object):
         self.x = column
         self.y = row
         self.shape = shape
-        self.color = random.choice(shapeColors)
+        self.color = random.choice(colors)
         self.rotation = 0  # number from 0-3
 
 
@@ -193,7 +198,7 @@ def checkLost(positions):
 
 
 def getShape():
-    global shapes, shapeColors
+    global shapes, colors
 
     return Piece(5, 0, random.choice(shapes))
 
@@ -206,14 +211,24 @@ def drawTextMiddle(text, size, color, surface):
                          label.get_height() / 2))
 
 
+def displayScore(text, size, color, surface):
+    font = pygame.font.SysFont('monospace', size, bold=True)
+    label = font.render(text, 1, color)
+
+    sx = topLeft_x + playWidth - 500
+    sy = topLeft_y + playHeight / 2 - 100
+
+    surface.blit(label, (sx + 2, sy - 5))
+
+
 def drawGrid(surface, row, col):
     sx = topLeft_x
     sy = topLeft_y
     for i in range(row):
-        pygame.draw.line(surface, (random.choice(shapeColors)), (sx, sy + i * 30), (sx + playWidth, sy + i * 30))
+        pygame.draw.line(surface, (255, 255, 255), (sx, sy + i * 30), (sx + playWidth, sy + i * 30))
         # horizontal lines
         for j in range(col):
-            pygame.draw.line(surface, (random.choice(shapeColors)), (sx + j * 30, sy), (sx + j * 30, sy + playHeight))
+            pygame.draw.line(surface, (255, 255, 255), (sx + j * 30, sy), (sx + j * 30, sy + playHeight))
             # vertical lines
 
     # This is the code for horizontal and vertical lines
@@ -244,10 +259,10 @@ def clearRows(grid, locked):
 
 
 def drawNextShape(shape, surface):
-    font = pygame.font.SysFont('monospace', 30)
-    label = font.render('Next Shape', 1, (random.choice(shapeColors)))
+    font = pygame.font.SysFont('monospace', 30, bold=True)
+    label = font.render('Next Shape', 1, (random.choice(colors)))
 
-    sx = topLeft_x + playWidth + 50
+    sx = topLeft_x + playWidth + 25
     sy = topLeft_y + playHeight / 2 - 100
     format = shape.shape[shape.rotation % len(shape.shape)]
 
@@ -257,15 +272,15 @@ def drawNextShape(shape, surface):
             if column == '0':
                 pygame.draw.rect(surface, shape.color, (sx + j * 30, sy + i * 30, 30, 30), 0)
 
-    surface.blit(label, (sx + 2, sy - 15))
+    surface.blit(label, (sx + 2, sy - 5))
 
 
 def drawWindow(surface):
     surface.fill((0, 0, 0))
     # Tetris Title
     font = pygame.font.SysFont('comicsans', 60)
-    label = font.render('TETRIS', 1, (random.choice(shapeColors)))
-    # label2 = font.render('Score:', 1, (random.choice(shapeColors)))
+    label = font.render('TETRIS', 1, (random.choice(colors)))
+    # label2 = font.render('Score:', 1, (random.choice(colors)))
 
     surface.blit(label, (topLeft_x + playWidth / 2 - (label.get_width() / 2), 30))
 
@@ -279,8 +294,8 @@ def drawWindow(surface):
     # pygame.display.update()
 
 
-def mainMenu():
-    global grid
+def mainRun():
+    global grid, score
 
     lockedPositions = {}  # (x,y):(255,0,0)
     grid = createGrid(lockedPositions)
@@ -293,7 +308,6 @@ def mainMenu():
     fallTime = 0
     levelTime = 0
     fallSpeed = 0.27
-    score = 0
 
     while run:
 
@@ -361,9 +375,12 @@ def mainMenu():
 
         # IF PIECE HIT GROUND
         if changePiece:
+            score += 1
+
             for pos in shape_pos:
                 p = (pos[0], pos[1])
                 lockedPositions[p] = currentPiece.color
+
             currentPiece = nextPiece
             nextPiece = getShape()
             changePiece = False
@@ -374,6 +391,7 @@ def mainMenu():
 
         drawWindow(win)
         drawNextShape(nextPiece, win)
+        displayScore(f"Score: {score}", 30, random.choice(colors), win)
         pygame.display.update()
 
         # Check if user lost
@@ -381,6 +399,7 @@ def mainMenu():
             run = False
 
     drawTextMiddle("Game ended", 40, (255, 255, 255), win)
+    score = 0
     pygame.display.update()
     pygame.time.delay(2000)
 
@@ -389,7 +408,12 @@ def main():
     run = True
     while run:
         win.fill((0, 0, 0))
-        drawTextMiddle('Press any key to begin.', 60, (255, 255, 255), win)
+        drawTextMiddle('Press any key to begin.', 60, (random.choice(colors)), win)
+
+        font = pygame.font.SysFont("Monospace", 20, random.choice(colors), win)
+        label = font.render("High Scores (press h to view)", 1, random.choice(colors))
+        win.blit(label, (25, 25))
+
         pygame.display.update()
 
         for event in pygame.event.get():
@@ -397,12 +421,9 @@ def main():
                 run = False
 
             if event.type == pygame.KEYDOWN:
-                mainMenu()
+                mainRun()
 
     pygame.quit()
 
-
-win = pygame.display.set_mode((sWidth, sHeight))
-pygame.display.set_caption('TETRIS')
 
 main()   # start game

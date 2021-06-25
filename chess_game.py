@@ -5,6 +5,7 @@ The main game / the driver file.
 import pygame
 import engine
 import chess_AI
+from multiprocessing import Process, Queue
 import os
 import random
 
@@ -58,8 +59,12 @@ def main():
 
     bools = True, False
 
-    playerOne = False   # random.choice(bools)
+    playerOne = True  # random.choice(bools)
     playerTwo = False   # random.choice(bools)
+
+    AIThinking = False
+    moveFinderProcess = None
+    moveUndone = False
 
     run = True
     while run:
@@ -69,7 +74,7 @@ def main():
                 run = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if not gameOver and humanTurn:
+                if not gameOver:
                     location = pygame.mouse.get_pos()
                     col = location[0] // SQ_SIZE
                     row = location[1] // SQ_SIZE
@@ -81,7 +86,7 @@ def main():
                         sqSelected = (row, col)
                         playerClicks.append(sqSelected)
 
-                    if len(playerClicks) == 2:
+                    if len(playerClicks) == 2 and humanTurn:
                         move = engine.Move(playerClicks[0], playerClicks[1], gs.board)
                         print(move.getChessNotation())
                         for i in range(len(validMoves)):
@@ -104,6 +109,11 @@ def main():
                     moveMade = True
                     animate = False
                     gameOver = False
+
+                    if AIThinking:
+                        moveFinderProcess.terminate()
+                        AIThinking = False
+                    moveUndone = True
                 elif event.key == pygame.K_r or event.key == pygame.K_x:
                     gs = engine.GameState()
                     validMoves = gs.getValidMoves()
@@ -113,15 +123,30 @@ def main():
                     animate = False
                     gameOver = False
 
+                    if AIThinking:
+                        moveFinderProcess.terminate()
+                        AIThinking = False
+                    moveUndone = True
+
         # AI move finder
-        if not gameOver and not humanTurn:
-            AImove = chess_AI.findBestMove(gs, validMoves)
-            if AImove is None:
-                AImove = chess_AI.findRandomMove(validMoves)
-            gs.makeMove(AImove)
-            moveCounter += 1
-            moveMade = True
-            animate = True
+        if not gameOver and not humanTurn and not moveUndone:
+            if not AIThinking:
+                AIThinking = True
+                print("Thinking and Processing...")
+                returnQueue = Queue()   # used to pass data between threads
+                moveFinderProcess = Process(target=chess_AI.findBestMove, args=(gs, validMoves, returnQueue))
+                moveFinderProcess.start()  # start the process
+
+            if not moveFinderProcess.is_alive():
+                print("Finished Thinking and Processing")
+                AImove = returnQueue.get()
+                if AImove is None:
+                    AImove = chess_AI.findRandomMove(validMoves)
+                gs.makeMove(AImove)
+                moveCounter += 1
+                moveMade = True
+                animate = True
+                AIThinking = False
 
         if moveMade:
             if animate:
@@ -129,6 +154,7 @@ def main():
             validMoves = gs.getValidMoves()
             moveMade = False
             animate = False
+            moveUndone = False
 
         drawGameState(win, gs, validMoves, sqSelected, moveLogFont)
 
