@@ -2,7 +2,10 @@ from turtle import *
 
 speed(0)
 hideturtle()
-bgcolor("black")
+
+win = Screen()
+win.bgcolor("black")
+win.title("Fractal Art")
 
 
 def tree(size, levels, angle):
