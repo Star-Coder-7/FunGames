@@ -10,9 +10,9 @@
 # Assemble all the functions needed for the buttons and score.
 
 import tkinter as tk
-from tkinter.messagebox import showerror
-from tkinter.messagebox import showinfo
+from tkinter.messagebox import showinfo, showerror
 from random import choice
+from time import sleep
 
 colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'white', 'gray', 'black', 'cyan',
           'turquoise', 'indigo', 'violet', 'magenta', 'maroon']
@@ -24,7 +24,7 @@ user = str(input("\nDo you want to remove any colors? If you want to, enter the 
 
 while user != "":
     if user in colors:
-        print("Alright, I will remove that.")
+        print("Alright, I will remove that for you.")
         colors.remove(user)
 
         user = str(input("\nDo you want to remove any colors? If you want to, enter the color or press enter to stop: ")
@@ -41,9 +41,25 @@ else:
 name1 = input("Please enter player 1's name (X): ")
 name2 = input("Please enter player 2's name (O): ")
 
+print()
+
+# Countdown timer from 5
+sleep(1)
+print(5)
+sleep(1)
+print(4)
+sleep(1)
+print(3)
+sleep(1)
+print(2)
+sleep(1)
+print(1)
+sleep(1)
+print("Ok, let's go!!!")
+
 gameWindow = tk.Tk()
 gameWindow.title("Tic Tac Toe")
-gameWindow.geometry("1350x750+0+0")
+gameWindow.geometry("1350x750")
 gameWindow.minsize(1250, 650)
 gameWindow.maxsize(1450, 850)
 gameWindow.config(bg=choice(colors))
