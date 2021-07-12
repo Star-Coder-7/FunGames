@@ -2,6 +2,7 @@
 # Set up a list of colors and introduce it to the players.
 # Make sure the players are satisfied with the colors.
 # Get the players' names and determine who is X and O.
+# Countdown a timer from 5 on IDE screen.
 # Create a gui/window to set up for our game.
 # Build all the frames needed in the gui and the subheading.
 # Introduce a scoreboard for both players.
