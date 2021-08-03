@@ -4,15 +4,14 @@ The main game / the driver file.
 
 import pygame
 import engine
-import chess_AI
+from Chess import chess_AI
 from multiprocessing import Process, Queue
 import os
-import random
 
 pygame.init()
 pygame.font.init()
 
-chess_icon = pygame.image.load(os.path.join('img3', 'chess_icon.ico'))
+chess_icon = pygame.image.load(os.path.join('../img3', 'chess_icon.ico'))
 pygame.display.set_icon(chess_icon)
 
 BOARD_WIDTH = BOARD_HEIGHT = 720

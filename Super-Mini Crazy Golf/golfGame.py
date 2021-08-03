@@ -673,12 +673,12 @@ while True:
                         break
                     elif x[3] == 'S':  # Sticky Ball (sticks to any non-hazard)
                         if superPower is False and stickyPower is False and freeShot is False and \
-                            halo is False and powerups > 0:
+                                halo is False and powerups > 0:
                             stickyPower = True
                             powerups -= 1
                             ballColor = (255, 0, 255)
                     elif x[3] == 'M':  # Mullagain, allows you to retry your shot from your previous position, will
-                                       # remove strokes you had on last shot
+                        # remove strokes you had on last shot
                         if mullagain is False and powerups > 0 and strokes >= 1:
                             mullagain = True
                             powerups -= 1
@@ -699,13 +699,13 @@ while True:
                             ballColor = (255, 69, 0)
                     elif x[3] == 'F':  # Free Shot, doesn't add 1 to strokes and allows to play a normal shot
                         if superPower is False and stickyPower is False and freeShot is False and \
-                            halo is False and powerups > 0:
+                                halo is False and powerups > 0:
                             freeShot = True
                             powerups -= 1
                             ballColor = (252, 211, 3)
                     elif x[3] == 'H':  # Hazard Penalty, removes +1 penalty stroke for colliding with hazards
                         if superPower is False and stickyPower is False and freeShot is False and \
-                            halo is False and powerups > 0:
+                                halo is False and powerups > 0:
                             halo = True
                             powerups -= 1
                             ballColor = (73, 19, 209)
@@ -1052,7 +1052,7 @@ while True:
                                     break
 
                     elif i[1] + i[3] < ballCords[1] < i[1] + i[3] + 10 and ballCords[0] + 2 > i[0] and \
-                        ballCords[0] < i[0] + i[2] + 2:
+                            ballCords[0] < i[0] + i[2] + 2:
                         power = physics.findPower(power, angle, time)
                         if not hitting:
                             hitting = True

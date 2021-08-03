@@ -1,5 +1,5 @@
 import pygame
-from constants import GRAY, SQ_SIZE, CROWN
+from checkers.constants import GRAY, SQ_SIZE, CROWN
 
 
 class Pieces:
